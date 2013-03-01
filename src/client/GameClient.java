@@ -16,7 +16,7 @@ public class GameClient {
 	final int N_NUM = 9;	// Total number of Nodes
 	final int T_NUM = 3;	// Number of treasures on the map
 	final int P_NUM = 2;	// Number of players
-	final int MG_NUM = 2;	// Number of mini-games
+	final int K_NUM = 20;	// Number of key codes
 
 	// Event code
 	final int invalidEvent = 0;
@@ -24,14 +24,15 @@ public class GameClient {
 	final int mapUpdateEvent = 2;
 	final int openTreasureEvent = 3;
 	final int scoreUpdateEvent = 4;
-	final int endOfGameEvent = 5;
+	final int addKeyEvent = 5;
+	final int endOfGameEvent = 6;
 
 	final int timeOutDuration = 500;
 	Random randomGenerator;
 
 	// Stores when player informations, add player when they connects to the server for the first time
 	// there is no playerID stored, the index of the array is equals to playerID 
-	// Currently stored values are: logged on? and playerScore
+	// Currently stored values are: logged on?, playerScore and number of keys held
 
 	private int[][] playerList;
 
@@ -77,11 +78,12 @@ public class GameClient {
 
 	private void initializePlayerList()
 	{
-		playerList = new int[P_NUM][2];
+		playerList = new int[P_NUM][3];
 		for(int i = 0; i<P_NUM; i++)
 		{
 			playerList[i][0] = 0;
 			playerList[i][1] = 0;
+			playerList[i][2] = 0;
 		}
 	}
 
@@ -162,6 +164,7 @@ public class GameClient {
 		{
 			playerList[i][0] = Integer.parseInt(requestToken.nextToken());
 			playerList[i][1] = Integer.parseInt(requestToken.nextToken());
+			playerList[i][2] = Integer.parseInt(requestToken.nextToken());
 			playerLocation[i] =  Integer.parseInt(requestToken.nextToken());
 		}
 
@@ -173,7 +176,7 @@ public class GameClient {
 		globalEvent = Integer.parseInt(requestToken.nextToken());
 	}
 
-	public int openTreasureEvent(int playerID) throws Exception {
+	public String openTreasureEvent(int playerID) throws Exception {
 
 		/* Use DataGramSocket for UDP connection convert string "request" to array of bytes,
 		 * suitable for creation of DatagramPacket */
@@ -201,7 +204,7 @@ public class GameClient {
 		/* End of UDP protocol */
 
 		// Game Server's openTreasureEvent reply format: a mini game ID: 0 1 2 ... < MG_NUM
-		return Integer.parseInt(reply);
+		return reply;
 	}
 
 	public String scoreUpdateEvent(int playerID, int newScore) throws Exception {
@@ -228,10 +231,41 @@ public class GameClient {
 
 		// convert reply to string and print to System.out
 		String reply = new String(incomingPacket.getData(), 0, incomingPacket.getLength());
-		System.out.println(reply + " [loginEvent: GameClient.java]");
+		System.out.println(reply + " [scoreUpdateEvent: GameClient.java]");
 		/* End of UDP protocol */
 
 		// Game Server's scoreUpdateEvent reply format: Failure or Successful
+		return reply;
+	}
+	
+	public String addKeyEvent(int playerID, int keyCode) throws Exception {
+
+		/* Use DataGramSocket for UDP connection convert string "request" to array of bytes,
+		 * suitable for creation of DatagramPacket */
+		String request = addKeyEvent +";" + playerID + ";" + keyCode;
+
+		/* Start of UDP protocol */
+		byte outgoingBuffer[] = request.getBytes();
+
+		// Now create a packet (with destination inetAddress and port)
+		DatagramPacket outgoingPacket = new DatagramPacket(outgoingBuffer, outgoingBuffer.length, inetAddress, port);
+
+		// sends request to game server
+		socket.send(outgoingPacket);
+
+		// create a packet buffer to store data from packets received.
+		byte[] incomingBuffer = new byte[1000];
+		DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length);
+
+		// receive the reply from server.
+		socket.receive(incomingPacket);
+
+		// convert reply to string and print to System.out
+		String reply = new String(incomingPacket.getData(), 0, incomingPacket.getLength());
+		System.out.println(reply + " [addKeyEvent: GameClient.java]");
+		/* End of UDP protocol */
+
+		// Game Server's addKeyEvent reply format: Failure or Successful
 		return reply;
 	}
 

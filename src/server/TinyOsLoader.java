@@ -24,7 +24,7 @@ public class TinyOsLoader implements MessageListener
 		
 		locationList = new int[P_NUM];
 		
-		// initialize all to -1 first
+		// initialize all to 0 first
 		for( int i = 0; i < P_NUM; i++)
 			locationList[i] = 0; 
 		

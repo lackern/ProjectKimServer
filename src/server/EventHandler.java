@@ -17,7 +17,7 @@ public class EventHandler {
 	final int N_NUM = 9;	// Total number of Nodes
 	final int T_NUM = 3;	// Number of treasures on the map
 	final int P_NUM = 2;	// Number of players
-	final int MG_NUM = 2;	// Number of mini-games
+	final int K_NUM = 20;	// Number of key codes
 
 	// Event code
 	final int invalidEvent = 0;
@@ -25,19 +25,24 @@ public class EventHandler {
 	final int mapUpdateEvent = 2;
 	final int openTreasureEvent = 3;
 	final int scoreUpdateEvent = 4;
-	final int endOfGameEvent = 5;
+	final int addKeyEvent = 5;
+	final int endOfGameEvent = 6;
 
 	Random randomGenerator;
 
 	// Stores when player informations, add player when they connects to the server for the first time
 	// there is no playerID stored, the index of the array is equals to playerID 
-	// Currently stored values are: logged on? and playerScore
+	// Currently stored values are: logged on?, playerScore and number of keys held
 
 	private int[][] playerList;
 
 	private int[] treasureList;	// stores treasure location
+	private int[] keyCodeList;
 	private int globalEvent;		// store when and where the global event happens
 
+	// for testing purpose
+	private static int[] playerLocation;
+	
 	// TinyOS
 	//private TinyOsLoader tinyOsLoader; 
 
@@ -48,7 +53,10 @@ public class EventHandler {
 		randomGenerator = new Random();
 		initializeTreasureList();
 		initializePlayerList();
+		initializeKeyCodeList();
 		globalEvent = 0;
+		
+		initializePlayerLocation();
 	}
 
 	// return 
@@ -80,6 +88,9 @@ public class EventHandler {
 		break;
 
 		case scoreUpdateEvent: reply = scoreUpdateEvent(playerID, Integer.parseInt(requestToken.nextToken() ));
+		break;
+		
+		case addKeyEvent: reply = addKeyEvent(playerID, Integer.parseInt(requestToken.nextToken() ));
 		break;
 
 		case endOfGameEvent: reply = endOfGameEvent(playerID);
@@ -124,20 +135,43 @@ public class EventHandler {
 
 	private void initializePlayerList() 
 	{
-		playerList = new int[P_NUM][2];
+		playerList = new int[P_NUM][3];
 
 		for(int i = 0; i<P_NUM; i++)
 		{
 			playerList[i][0] = 0;
 			playerList[i][1] = 0;
+			playerList[i][2] = 0;
 		}
 
 		for(int i = 0; i<P_NUM; i++)
-			System.out.println("Player " + i + ": " + " logged on: " + playerList[i][0] + " playerScore: " + playerList[i][1]);
+			System.out.println("Player " + i + ": " + " logged on: " + playerList[i][0] + " playerScore: " + playerList[i][1] + " keysHeld: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
 	}
 
+	private void initializeKeyCodeList() 
+	{
+		keyCodeList = new int[K_NUM];
+
+		for(int i = 0; i<K_NUM; i++)
+		{
+			keyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
+		}
+
+		for(int i = 0; i<K_NUM; i++)
+			System.out.println(keyCodeList[i]);
+
+		System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
+	}
+	
+	private void initializePlayerLocation()
+	{
+		playerLocation = new  int[P_NUM];
+		for(int i = 0; i < P_NUM; i++)
+			playerLocation[i] = 4;
+	}
+	
 	private String invalidEvent(int playerID) {
 		return "Invalid";
 	}
@@ -164,7 +198,7 @@ public class EventHandler {
 	// Return player's map location upon request
 	private String mapUpdateEvent(int playerID) 
 	{
-		// reply format: p1 logon status, p1 score,p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM.
+		// reply format: p1 logon status, p1 score, p1 keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM.
 		String reply = "";
 
 		String l_reply = "";
@@ -177,16 +211,45 @@ public class EventHandler {
 		  	{
 		 	l_reply += playerList[i][0] + ";";
 		 	l_reply += playerList[i][1] + ";";
+		 	l_reply += playerList[i][2] + ";";
 			l_reply += tinyOsLoader.getPlayerLocation(i) + ";";
 			}*/
 		 
+		int[][] newMove = new int[4][2];
+		newMove[0][0] = 0;
+		newMove[0][1] = -1;
+		newMove[1][0] = 0;
+		newMove[1][1] = 1;
+		newMove[2][0] = -1;
+		newMove[2][1] = 0;
+		newMove[3][0] = 1;
+		newMove[3][1] = 0;
 
 		// random player location for testing without tinyos
 		for(int i = 0; i < P_NUM; i++)
 		{
 			l_reply += playerList[i][0] + ";";
 			l_reply += playerList[i][1] + ";";
-			l_reply += randomGenerator.nextInt(N_NUM) + ";";
+			l_reply += playerList[i][2] + ";";
+			
+			int curX = playerLocation[i]/COLUMN ;
+			int curY = playerLocation[i]%COLUMN ;
+			
+			while(true)
+			{
+			int x = randomGenerator.nextInt(4);	
+			
+			if (!(curX + newMove[x][0] < 0 || curX + newMove[x][0] >= COLUMN || curY + newMove[x][1] < 0 || curY + newMove[x][1] >= ROW ))
+			{
+				curX += newMove[x][0];
+				curY += newMove[x][1];
+				break;
+			}
+			
+			}
+			
+			playerLocation[i] = curX * COLUMN + curY;
+			l_reply += playerLocation[i] + ";";
 		}
 
 		// convert treasure info into a string separated by ";"
@@ -206,35 +269,39 @@ public class EventHandler {
 	}
 
 	private String openTreasureEvent(int playerID, int playerLocation) {
-		// Game Server's openTreasureEvent reply format: a mini game ID: 0 1 2 ... < MG_NUM
+		// Game Server's openTreasureEvent reply format: Failure or Successful
 		String reply = "";
 
-		// generates a random mini gameID
-		int mgID = randomGenerator.nextInt(MG_NUM);
+		// check if player has >1 key to open chest
+		if (playerList[playerID][2] >= 1) {
+			
+			// tinyos
+			// if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1)
 
-		// Based on current treasure location, remove it and generate the treasure at some other location
-		
-		// tinyos
-		//if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1)
-		
-		// no tinyos
-		if(treasureList[playerLocation] == 1)
-		while(true)
-		{
-			int i =  randomGenerator.nextInt(N_NUM);
+			// no tinyos
+			if (treasureList[playerLocation] == 1) {
+				while (true) {
+					// Based on current treasure location, remove it and generate the treasure at some other location
+					int i = randomGenerator.nextInt(N_NUM);
 
-			if (treasureList[i] == 0)
-			{
-				treasureList[i] = 1;
-				//treasureList[tinyOsLoader.getPlayerLocation(playerID)] = 0;
-				treasureList[playerLocation] = 0;
-				break;
-			}
+					if (treasureList[i] == 0) {
+						treasureList[i] = 1;
+						// tinyOS
+						// treasureList[tinyOsLoader.getPlayerLocation(playerID)] = 0;
+
+						// no TinyOs
+						treasureList[playerLocation] = 0;
+						break;
+					}
+				}
+				
+				playerList[playerID][2] -= 1;
+				reply = "Successful";
 		}
+			else reply = "Failure"; 
+		}
+		else reply = "Failure";
 		
-		System.out.print(playerID +" :========================== open chest ====================================");
-		
-		reply += mgID;
 		return reply;
 	}
 
@@ -245,6 +312,33 @@ public class EventHandler {
 
 		if (playerID < P_NUM){
 			playerList[playerID][1] = newScore;
+			reply = "Successful";
+		}
+		else 
+			reply = "Failure";
+		
+		return reply;
+	}
+	
+	private boolean checkKeyCodeValidity(int keyCode) {
+		
+		for(int i = 0; i < K_NUM; i++)
+		{
+			if (keyCodeList[i] == keyCode)
+				return true;
+		}
+		
+		return true;
+	}
+
+	private String addKeyEvent(int playerID, int keyCode) {
+
+		// Game Server's addKeyEvent based on input keyCode, reply format: Failure or Successful
+		
+		String reply = "";
+
+		if (checkKeyCodeValidity(keyCode) == true){
+			playerList[playerID][2] += 1;
 			reply = "Successful";
 		}
 		else 
