@@ -24,10 +24,16 @@ public class GameServer {
 		@SuppressWarnings("resource")
 		DatagramSocket socket = new DatagramSocket(9001);
 		byte[] incomingBuffer = new byte[1000];
-
+		
+		long startTime = System.currentTimeMillis();
+		
 		// Constantly receiving incoming packets
 		while (true)
-		{
+		{	
+			if (System.currentTimeMillis() - startTime > 10000 )
+				System.out.println("TIMES UP");
+				
+			System.out.println(System.currentTimeMillis() + "---------test");
 			DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length); 
 
 			socket.receive(incomingPacket);
