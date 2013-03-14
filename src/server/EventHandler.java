@@ -191,7 +191,8 @@ public class EventHandler {
 			else 
 				if(playerList[playerID][0] == 1)
 					reply = "Already Logon";
-
+if (playerID == 0)
+	 new ReminderBeep(5);
 		return reply;
 	}
 

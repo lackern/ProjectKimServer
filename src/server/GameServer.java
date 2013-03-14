@@ -7,6 +7,9 @@ package server;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.awt.Toolkit;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameServer {
 	
@@ -30,8 +33,8 @@ public class GameServer {
 		// Constantly receiving incoming packets
 		while (true)
 		{	
-			if (System.currentTimeMillis() - startTime > 10000 )
-				System.out.println("TIMES UP");
+			//if (System.currentTimeMillis() - startTime > 10000 )
+				//System.out.println("TIMES UP");
 				
 			System.out.println(System.currentTimeMillis() + "---------test");
 			DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length); 
