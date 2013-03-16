@@ -203,7 +203,7 @@ public class GameClient {
 		System.out.println(reply + " [openTreasureEvent: GameClient.java]");
 		/* End of UDP protocol */
 
-		// Game Server's openTreasureEvent reply format: a mini game ID: 0 1 2 ... < MG_NUM
+		// Game Server's openTreasureEvent reply format: Failure or Successful
 		return reply;
 	}
 
