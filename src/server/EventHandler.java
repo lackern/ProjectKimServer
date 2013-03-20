@@ -34,7 +34,8 @@ public class EventHandler {
 
 	// Various event durations (seconds)
 	int countdownDurations = 6;
-	int fallingCoinsDurations = 60;
+	int beforeFallingCoinsDurations = 6;
+	int fallingCoinsDurations = 6;
 	int totalGameDurations = 600;
 	
 	Random randomGenerator;
@@ -402,7 +403,7 @@ public class EventHandler {
 	      toolkit.beep();
 	      System.out.println("Game starts now!");
 	      globalEvent = 2;
-	  	  timer.schedule(new FallingCoinStartTask(), countdownDurations * 1000);
+	  	  timer.schedule(new FallingCoinStartTask(), beforeFallingCoinsDurations * 1000);
 	      //timer.cancel(); //Not necessary because we call System.exit
 	     // System.exit(0); //Stops the AWT thread (and everything else)
 	    }
@@ -413,7 +414,7 @@ public class EventHandler {
 	      System.out.println("Falling Coins starts now!");
 	      globalEvent = 3;
 	      toolkit.beep();
-	  	  timer.schedule(new FallingCoinEndTask(), countdownDurations * 1000);
+	  	  timer.schedule(new FallingCoinEndTask(), fallingCoinsDurations * 1000);
 	    }
 	  }
 

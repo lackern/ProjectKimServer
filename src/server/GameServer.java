@@ -11,10 +11,10 @@ import java.net.DatagramSocket;
 public class GameServer {
 	
 	private static EventHandler eventHandler;
+	private static DatagramSocket socket ;
+	public static void main(String[] args) throws Exception {
 
-	//public static void main(String[] args) throws Exception {
-
-	public void connect() throws Exception { //newline
+	//public void connect() throws Exception { //newline
 		System.out.println("Game Server starting up... [GamerServer.java]");
 		
 		/* *** Initialization *** */
@@ -22,8 +22,8 @@ public class GameServer {
 		eventHandler = new EventHandler();
 
 		//use DatagramSocket for UDP connection
-		@SuppressWarnings("resource")
-		DatagramSocket socket = new DatagramSocket(9001);
+		//@SuppressWarnings("resource")
+		 socket = new DatagramSocket(9001);
 		byte[] incomingBuffer = new byte[1000];
 		
 		// Constantly receiving incoming packets
@@ -57,5 +57,8 @@ public class GameServer {
 		}
 
 	}
-
+	public void dc() throws Exception { //newlin
+		socket.close();
+	}
+	
 }

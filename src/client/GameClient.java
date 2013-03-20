@@ -59,7 +59,8 @@ public class GameClient {
 	 */
 
 	final int port = 9001;
-	final String gameServerAddress = "localhost";
+	final String gameServerAddress = "localhost"; 
+	//final String gameServerAddress = "10.0.0.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
 
