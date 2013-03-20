@@ -7,16 +7,14 @@ package server;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.awt.Toolkit;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GameServer {
 	
 	private static EventHandler eventHandler;
 
-	public static void main(String[] args) throws Exception {
+	//public static void main(String[] args) throws Exception {
 
+	public void connect() throws Exception { //newline
 		System.out.println("Game Server starting up... [GamerServer.java]");
 		
 		/* *** Initialization *** */
@@ -28,15 +26,9 @@ public class GameServer {
 		DatagramSocket socket = new DatagramSocket(9001);
 		byte[] incomingBuffer = new byte[1000];
 		
-		long startTime = System.currentTimeMillis();
-		
 		// Constantly receiving incoming packets
 		while (true)
 		{	
-			//if (System.currentTimeMillis() - startTime > 10000 )
-				//System.out.println("TIMES UP");
-				
-			System.out.println(System.currentTimeMillis() + "---------test");
 			DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length); 
 
 			socket.receive(incomingPacket);
