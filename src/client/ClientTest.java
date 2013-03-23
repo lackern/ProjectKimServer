@@ -18,12 +18,13 @@ public class ClientTest {
 		// Login test
 		//System.out.print(client.loginEvent(99));
 		//System.out.print(client.loginEvent(0));
-		System.out.print(client.loginEvent(0));
-		//System.out.print(client.scoreUpdateEvent(0,9));
+		//System.out.print(client.loginEvent(0));
+		System.out.print(client.scoreUpdateEvent(0,9));
 		// periodic mapUpdate tests
-		//client.addKeyEvent(0,1111);
-		//client.addKeyEvent(0,6103);
-		//client.getRankingOfGivenPlayer(0);
+		client.addKeyEvent(0,1111);
+		client.addKeyEvent(0,2527);
+		client.getRankingOfGivenPlayer(0);
+		System.out.print("ppp"+client.addKeyEvent(0,7278));
 		while(true) {
 			try {
 	    	Thread.sleep(1000);

@@ -57,8 +57,4 @@ public class GameServer {
 		}
 
 	}
-	public void dc() throws Exception { //newlin
-		socket.close();
-	}
-	
 }

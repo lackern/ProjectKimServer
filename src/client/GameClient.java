@@ -8,7 +8,6 @@ package client;
 
 import java.util.*;
 import java.net.*;
-import java.io.*;
 
 public class GameClient {
 	private final int ROW = 3; // Number of rows of Nodes
@@ -16,7 +15,7 @@ public class GameClient {
 
 	final int N_NUM = 9; // Total number of Nodes
 	final int T_NUM = 3; // Number of treasures on the map
-	final int P_NUM = 2; // Number of players
+	final int P_NUM = 4; // Number of players
 	final int K_NUM = 20; // Number of key codes
 
 	// Event code
@@ -226,7 +225,8 @@ public class GameClient {
 		System.out.println(reply + " [openTreasureEvent: GameClient.java]");
 		/* End of UDP protocol */
 
-		// Game Server's openTreasureEvent reply format: Failure or Successful
+		// Game Server's openTreasureEvent reply format: NoChest, NoKey or
+		// Successful
 		return reply;
 	}
 
@@ -298,11 +298,24 @@ public class GameClient {
 		System.out.println(reply + " [addKeyEvent: GameClient.java]");
 		/* End of UDP protocol */
 
-		// Game Server's openTreasureEvent reply format: NoChest, NoKey or
-		// Successful
+		// Game Server's addKeyEvent based on input keyCode, reply format:
+		// Failure or Successful
 		return reply;
 	}
 
+	public String getKCReply(int id, int code){
+		
+		try {
+			System.out.println("clientpkpktest " + addKeyEvent(id, code));
+			return addKeyEvent(id, code);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "gg";
+	}
+	
 	// Returns the X position of a playerID
 	public int getPlayerX(int playerID) {
 

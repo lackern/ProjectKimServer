@@ -1,6 +1,5 @@
 package server;
 
-import java.awt.Toolkit;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -20,7 +19,7 @@ public class EventHandler {
 
 	final int N_NUM = 9; // Total number of Nodes
 	final int T_NUM = 3; // Number of treasures on the map
-	final int P_NUM = 2; // Number of players
+	final int P_NUM = 4; // Number of players
 	final int K_NUM = 20; // Number of key codes
 
 	// Event code
@@ -57,7 +56,6 @@ public class EventHandler {
 	// 4 = falling coins ends
 	// 5 = game end
 	private int globalEvent;
-	Toolkit toolkit;
 	Timer timer;
 
 
@@ -77,7 +75,7 @@ public class EventHandler {
 		initializePlayerList();
 		initializeKeyCodeList();
 		globalEvent = 0;
-	    toolkit = Toolkit.getDefaultToolkit();
+		
 	    timer = new Timer();
 		
 		initializePlayerLocation();
@@ -138,7 +136,7 @@ public class EventHandler {
 	}
 
 	private void initializeTreasureList() {
-
+		
 		treasureList = new int[N_NUM];
 
 		// Initialize all treasure attributes to zero
@@ -158,9 +156,12 @@ public class EventHandler {
 
 		// prints current treasure layout
 		System.out.println("Treasure layout [EventHandler.java]");
+		
 		for (int i = 0; i < N_NUM; i++) {
 			System.out.print(treasureList[i] + " ");
 		}
+		
+		
 		System.out
 				.println("\nTreasure info initiatised ...[EventHandler.java]");
 	}
@@ -175,8 +176,8 @@ public class EventHandler {
 		}
 
 		for (int i = 0; i < P_NUM; i++)
-			System.out.println("Player " + i + ": " + " logged on: "
-					+ playerList[i][0] + " playerScore: " + playerList[i][1]
+			System.out.println("Player " + i + ": " + " logon: "
+					+ playerList[i][0] + " Score: " + playerList[i][1]
 					+ " keysHeld: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
@@ -189,8 +190,7 @@ public class EventHandler {
 			keyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
 		}
 
-		for (int i = 0; i < K_NUM; i++)
-			System.out.println(keyCodeList[i]);
+		System.out.println(getKeyCodeString());
 
 		System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
 	}
@@ -380,7 +380,8 @@ public class EventHandler {
 			reply = "Successful";
 		} else
 			reply = "Failure";
-		System.out.println("keytest " + reply);
+
+		System.out.println("Player: " + playerID + " Keycode: " + keyCode + " request for addKeyCode");
 		return reply;
 	}
 
@@ -397,10 +398,51 @@ public class EventHandler {
 		return playerScore;
 	}
 	
+	 String getKeyCodeString() {
+
+		String keyCodeString = "";
+
+		for (int i = 0; i < K_NUM; i++) {
+			keyCodeString = keyCodeString + keyCodeList[i] + "   ";
+			
+			if ((i+1)% 10 == 0)
+				keyCodeString = keyCodeString + "\n";
+		}
+		
+		return keyCodeString;
+	}
+	 
+	 String getPlayerInfoString() {
+
+		String playerInfoString = "";
+
+		for (int i = 0; i < P_NUM; i++)
+			playerInfoString = playerInfoString + "Player " + i + " : " + "  logon: "
+					+ playerList[i][0] + "  Score: " + playerList[i][1]
+					+ "  keysHeld: " + playerList[i][2] + "  Location: " + playerLocation[i] + "\n";
+		
+		return playerInfoString;
+	}
+	 
+	 String getTreasureInfoString() {
+
+		String getTreasureInfoString = "";
+
+		for (int i = 0; i < N_NUM; i++) {
+			getTreasureInfoString = getTreasureInfoString + treasureList[i] + "   ";
+		if((i+1)% COLUMN == 0)
+			getTreasureInfoString = getTreasureInfoString + "\n";
+		}
+		
+		return getTreasureInfoString;
+	}
+	 
+	 
+	
+	// global event scheduling class
 	class CountdownTask extends TimerTask {
 	    public void run() {
 	      System.out.println("countdown Time's up!");
-	      toolkit.beep();
 	      System.out.println("Game starts now!");
 	      globalEvent = 2;
 	  	  timer.schedule(new FallingCoinStartTask(), beforeFallingCoinsDurations * 1000);
@@ -413,7 +455,6 @@ public class EventHandler {
 	    public void run() {
 	      System.out.println("Falling Coins starts now!");
 	      globalEvent = 3;
-	      toolkit.beep();
 	  	  timer.schedule(new FallingCoinEndTask(), fallingCoinsDurations * 1000);
 	    }
 	  }
@@ -422,7 +463,6 @@ public class EventHandler {
 	    public void run() {
 	      System.out.println("Falling Coins ends now!");
 	      globalEvent = 4;
-	      toolkit.beep();
 	  	  timer.schedule(new EndofGameTask(), countdownDurations * 1000);
 	    }
 	  }
@@ -431,7 +471,6 @@ public class EventHandler {
 	    public void run() {
 	      System.out.println("END OF GAME!");
 	      globalEvent = 5;
-	      toolkit.beep();
 	    }
 	  }
 }
