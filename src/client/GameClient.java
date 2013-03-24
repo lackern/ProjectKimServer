@@ -38,7 +38,6 @@ public class GameClient {
 	private int[][] playerList;
 
 	private int[] treasureList; // stores treasure location
-
 	// globalEvent code: Stores the current global game status
 	// 0 = pre-game
 	// 1 = countdown stage, once the first player logon to the server
@@ -58,8 +57,7 @@ public class GameClient {
 	 */
 
 	final int port = 9001;
-	final String gameServerAddress = "localhost"; 
-	//final String gameServerAddress = "10.0.0.2";
+	final String gameServerAddress = "10.0.2.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
 
@@ -225,8 +223,7 @@ public class GameClient {
 		System.out.println(reply + " [openTreasureEvent: GameClient.java]");
 		/* End of UDP protocol */
 
-		// Game Server's openTreasureEvent reply format: NoChest, NoKey or
-		// Successful
+		// Game Server's openTreasureEvent reply format: Failure or Successful
 		return reply;
 	}
 
@@ -298,24 +295,11 @@ public class GameClient {
 		System.out.println(reply + " [addKeyEvent: GameClient.java]");
 		/* End of UDP protocol */
 
-		// Game Server's addKeyEvent based on input keyCode, reply format:
-		// Failure or Successful
+		// Game Server's openTreasureEvent reply format: NoChest, NoKey or
+		// Successful
 		return reply;
 	}
 
-	public String getKCReply(int id, int code){
-		
-		try {
-			System.out.println("clientpkpktest " + addKeyEvent(id, code));
-			return addKeyEvent(id, code);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return "gg";
-	}
-	
 	// Returns the X position of a playerID
 	public int getPlayerX(int playerID) {
 

@@ -1,11 +1,7 @@
 package server;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import com.jgoodies.forms.factories.DefaultComponentFactory;
 import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -18,16 +14,24 @@ import java.awt.Insets;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.text.DefaultCaret;
+import java.awt.Label;
 
 public class GameServerGUI {
 
 	private JFrame frame;
 	private GameServer gameServer;
 	private ConnectThread connectThread;
+
+	Button startButton = new Button("Start Server");
+	Button closeButton = new Button("Close Server");
 	JTextArea JConsole = new JTextArea();
 	JTextArea JKeyCode = new JTextArea();
 	JTextArea JPlayer = new JTextArea();
 	JTextArea JTreasure = new JTextArea();
+	private final Label labelTreasureList = new Label("Treasure List");
+	private final Label labelKeyCodeList = new Label("KeyCode List");
+	private final Label labelPlayerInfo = new Label("Player Info");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -35,6 +39,7 @@ public class GameServerGUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					System.out.print("Starting ProjectKim Server GUI");
 					GameServerGUI window = new GameServerGUI();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -49,20 +54,12 @@ public class GameServerGUI {
 	 * @throws Exception 
 	 */
 	public GameServerGUI() throws Exception {
-		gameServer = new GameServer();
-		JPlayer.setText(gameServer.getPlayerInfoString());
-		JTreasure.setEditable(false);
-		JTreasure.setMargin(new Insets(11, 11, 11, 11));
-		JTreasure.setText(gameServer.getTreasureInfoString());
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-
-	Button startButton = new Button("Start Server");
-	Button closeButton = new Button("Close Server");
 	private void initialize() {
 		frame = new JFrame("Project Kim Server");
 		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
@@ -70,7 +67,6 @@ public class GameServerGUI {
 		frame.setBounds(100, 100, 500, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//Button startButton = new Button("Start Server");
 		startButton.setBounds(new Rectangle(0, 0, 55, 55));
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -79,7 +75,7 @@ public class GameServerGUI {
 					connectThread.start();
 					startButton.setEnabled(false);
 					closeButton.setEnabled(true);
-					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -94,16 +90,25 @@ public class GameServerGUI {
 					gameServer.dc();
 					startButton.setEnabled(true);
 					closeButton.setEnabled(false);
-					
+
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
 		});
+		
 		SpringLayout springLayout = new SpringLayout();
+		springLayout.putConstraint(SpringLayout.NORTH, labelPlayerInfo, 6, SpringLayout.SOUTH, JKeyCode);
+		springLayout.putConstraint(SpringLayout.WEST, labelPlayerInfo, 10, SpringLayout.WEST, JKeyCode);
+		springLayout.putConstraint(SpringLayout.SOUTH, labelPlayerInfo, -6, SpringLayout.NORTH, JPlayer);
+		springLayout.putConstraint(SpringLayout.NORTH, labelKeyCodeList, -19, SpringLayout.NORTH, JKeyCode);
+		springLayout.putConstraint(SpringLayout.SOUTH, labelKeyCodeList, -6, SpringLayout.NORTH, JKeyCode);
+		springLayout.putConstraint(SpringLayout.NORTH, labelTreasureList, 6, SpringLayout.SOUTH, closeButton);
+		springLayout.putConstraint(SpringLayout.SOUTH, labelTreasureList, -5, SpringLayout.NORTH, JTreasure);
+		springLayout.putConstraint(SpringLayout.EAST, labelTreasureList, 0, SpringLayout.EAST, startButton);
 		springLayout.putConstraint(SpringLayout.NORTH, JTreasure, 0, SpringLayout.NORTH, JPlayer);
-		springLayout.putConstraint(SpringLayout.WEST, JTreasure, 10, SpringLayout.WEST, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, JTreasure, 0, SpringLayout.WEST, startButton);
 		springLayout.putConstraint(SpringLayout.EAST, JTreasure, -6, SpringLayout.WEST, JPlayer);
 		springLayout.putConstraint(SpringLayout.WEST, JPlayer, 0, SpringLayout.WEST, JKeyCode);
 		springLayout.putConstraint(SpringLayout.NORTH, JPlayer, 105, SpringLayout.NORTH, frame.getContentPane());
@@ -121,55 +126,60 @@ public class GameServerGUI {
 		springLayout.putConstraint(SpringLayout.EAST, JKeyCode, -10, SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().setLayout(springLayout);
 		frame.getContentPane().add(startButton);
-		//frame.getContentPane().add(JConsole);
 		frame.getContentPane().add(closeButton);
 
-		JScrollPane scrollPane = new JScrollPane();
-		springLayout.putConstraint(SpringLayout.SOUTH, JTreasure, -6, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, JPlayer, -6, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 198, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, frame.getContentPane());
+		JScrollPane JConsoleScrollPane = new JScrollPane();
+		springLayout.putConstraint(SpringLayout.SOUTH, JTreasure, -6, SpringLayout.NORTH, JConsoleScrollPane);
+		springLayout.putConstraint(SpringLayout.SOUTH, JPlayer, -6, SpringLayout.NORTH, JConsoleScrollPane);
+		springLayout.putConstraint(SpringLayout.NORTH, JConsoleScrollPane, 198, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, JConsoleScrollPane, -10, SpringLayout.SOUTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, JConsoleScrollPane, 10, SpringLayout.WEST, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, JConsoleScrollPane, -10, SpringLayout.EAST, frame.getContentPane());
 
 		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		scrollPane.setBackground(Color.BLACK);
-		frame.getContentPane().add(scrollPane);
+		JConsoleScrollPane.setBackground(Color.BLACK);
+		frame.getContentPane().add(JConsoleScrollPane);
+		JConsoleScrollPane.setViewportView(JConsole);
+		
 		springLayout.putConstraint(SpringLayout.NORTH, JConsole, 84, SpringLayout.SOUTH, closeButton);
 		springLayout.putConstraint(SpringLayout.WEST, JConsole, 0, SpringLayout.WEST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, JConsole, 0, SpringLayout.SOUTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, JConsole, -242, SpringLayout.EAST, frame.getContentPane());
 		JConsole.setMargin(new Insets(5, 5, 5, 5));
-		scrollPane.setViewportView(JConsole);
 		JConsole.setRows(5);
 		JConsole.setEditable(false);
 		JConsole.setText("JConsole");
-
-		JLabel lblKeycodes = DefaultComponentFactory.getInstance().createLabel("KeyCodes List");
-		springLayout.putConstraint(SpringLayout.WEST, lblKeycodes, 120, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, lblKeycodes, -6, SpringLayout.NORTH, JKeyCode);
-		springLayout.putConstraint(SpringLayout.EAST, lblKeycodes, -287, SpringLayout.EAST, frame.getContentPane());
-		frame.getContentPane().add(lblKeycodes);
-
-		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
 		JKeyCode.setEditable(false);
+		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
 		frame.getContentPane().add(JKeyCode);
-		JPlayer.setEditable(false);
-
+		JKeyCode.setText("????");
+	
+		JPlayer.setEditable(false);		
 		JPlayer.setMargin(new Insets(5, 5, 5, 5));
 		frame.getContentPane().add(JPlayer);
+		JPlayer.setText("Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
+				+ "Player 1:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
+				+ "Player 2:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
+				+ "Player 3:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
 		
-		JLabel lblPlayerInfo = DefaultComponentFactory.getInstance().createLabel("Player Info");
-		springLayout.putConstraint(SpringLayout.WEST, lblPlayerInfo, 0, SpringLayout.WEST, lblKeycodes);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblPlayerInfo, -6, SpringLayout.NORTH, JPlayer);
-		frame.getContentPane().add(lblPlayerInfo);
 		frame.getContentPane().add(JTreasure);
+		JTreasure.setEditable(false);
+		JTreasure.setMargin(new Insets(11, 11, 11, 11));
+		JTreasure.setText("  ?  ?  ?\n  ?  ?  ?\n  ?  ?  ?");
 		
-		JLabel lblTreasureChests = DefaultComponentFactory.getInstance().createLabel("Treasure Chests");
-		springLayout.putConstraint(SpringLayout.NORTH, lblTreasureChests, 6, SpringLayout.SOUTH, closeButton);
-		springLayout.putConstraint(SpringLayout.WEST, lblTreasureChests, 0, SpringLayout.WEST, startButton);
-		frame.getContentPane().add(lblTreasureChests);
+		Label labelPKServer = new Label("PK Server");
+		springLayout.putConstraint(SpringLayout.WEST, labelKeyCodeList, 32, SpringLayout.EAST, labelPKServer);
+		springLayout.putConstraint(SpringLayout.NORTH, labelPKServer, 10, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, labelPKServer, 25, SpringLayout.WEST, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, labelPKServer, -6, SpringLayout.NORTH, startButton);
+		frame.getContentPane().add(labelPKServer);
+		
+		frame.getContentPane().add(labelTreasureList);
+		
+		frame.getContentPane().add(labelKeyCodeList);
+		
+		frame.getContentPane().add(labelPlayerInfo);
 	}
 
 
@@ -188,22 +198,25 @@ public class GameServerGUI {
 		}
 	}
 
+	// Game Server: feedback to client's requests through UDP connections
 	class GameServer {
 
-		private  EventHandler eventHandler =  new EventHandler() ;
+		private  EventHandler eventHandler;
 		private  DatagramSocket socket ;
-		//public static void main(String[] args) throws Exception {
 
-		public void connect() throws Exception { //newline
+		public void connect() throws Exception {
 
 			System.out.println("Game Server starting up... ");
 			JConsole.setText("JConsole\nGame Server starting up... ");
 
 			/* *** Initialization *** */
 			String reply = ""; // stores the reply info
-			//eventHandler = new EventHandler();
-
+			eventHandler = new EventHandler();
+			
+			JPlayer.setText(eventHandler.getPlayerInfoString());
 			JKeyCode.setText(eventHandler.getKeyCodeString());
+			JTreasure.setText(eventHandler.getTreasureInfoString());
+			
 			//use DatagramSocket for UDP connection
 			//@SuppressWarnings("resource")
 			socket = new DatagramSocket(9001);
@@ -224,7 +237,7 @@ public class GameServerGUI {
 				// pass client request to event handler to compute results
 
 				reply = eventHandler.computeEventsReply(request);
-
+				
 				/* ----------------------------------------------------- */
 
 				// convert reply into array of bytes (output buffer)
@@ -248,11 +261,11 @@ public class GameServerGUI {
 		String getPlayerInfoString(){	
 			return eventHandler.getPlayerInfoString();
 		}
-		
+
 		String getTreasureInfoString(){	
 			return eventHandler.getTreasureInfoString();
 		}
-		
+
 		public void dc() throws Exception {
 			JConsole.setText(JConsole.getText() + "\nClosing server");
 			//socket.disconnect();

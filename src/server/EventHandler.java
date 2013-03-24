@@ -36,7 +36,7 @@ public class EventHandler {
 	int beforeFallingCoinsDurations = 6;
 	int fallingCoinsDurations = 6;
 	int totalGameDurations = 600;
-	
+
 	Random randomGenerator;
 
 	// Stores when player informations, add player when they connects to the
@@ -44,7 +44,6 @@ public class EventHandler {
 	// there is no playerID stored, the index of the array is equals to playerID
 	// Currently stored values are: logged on?, playerScore and number of keys
 	private int[][] playerList;
-
 	private int[] treasureList; // stores treasure location
 	private int[] keyCodeList;  // stores the key codes
 
@@ -57,7 +56,6 @@ public class EventHandler {
 	// 5 = game end
 	private int globalEvent;
 	Timer timer;
-
 
 	// for testing purpose
 	private static int[] playerLocation;
@@ -75,16 +73,15 @@ public class EventHandler {
 		initializePlayerList();
 		initializeKeyCodeList();
 		globalEvent = 0;
+		timer = new Timer();
 		
-	    timer = new Timer();
-		
+		// For testing purpose when TinyOS is not in use.
 		initializePlayerLocation();
 	}
 
 	// return
 	public String computeEventsReply(String request) {
-
-		String reply = "Invalid";
+		String reply = "invalidEvent";
 
 		StringTokenizer requestToken;
 		requestToken = new StringTokenizer(request, ";");
@@ -128,7 +125,7 @@ public class EventHandler {
 			break;
 
 		default:
-			reply = "Invalid";
+			reply = "invalidEvent";
 			break;
 		}
 
@@ -144,10 +141,8 @@ public class EventHandler {
 			treasureList[i] = 0;
 
 		int counter = 0;
-
 		while (counter < T_NUM) {
 			int i = randomGenerator.nextInt(N_NUM);
-
 			if (treasureList[i] == 0) {
 				treasureList[i] = 1;
 				counter++;
@@ -156,17 +151,19 @@ public class EventHandler {
 
 		// prints current treasure layout
 		System.out.println("Treasure layout [EventHandler.java]");
-		
+
 		for (int i = 0; i < N_NUM; i++) {
 			System.out.print(treasureList[i] + " ");
+			if((i+1)%COLUMN == 0)
+				System.out.print("\n");
 		}
-		
-		
+
 		System.out
-				.println("\nTreasure info initiatised ...[EventHandler.java]");
+		.println("Treasure info initiatised ...[EventHandler.java]");
 	}
 
 	private void initializePlayerList() {
+		
 		playerList = new int[P_NUM][3];
 
 		for (int i = 0; i < P_NUM; i++) {
@@ -178,12 +175,13 @@ public class EventHandler {
 		for (int i = 0; i < P_NUM; i++)
 			System.out.println("Player " + i + ": " + " logon: "
 					+ playerList[i][0] + " Score: " + playerList[i][1]
-					+ " keysHeld: " + playerList[i][2]);
+							+ " keysHeld: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
 	}
 
 	private void initializeKeyCodeList() {
+		
 		keyCodeList = new int[K_NUM];
 
 		for (int i = 0; i < K_NUM; i++) {
@@ -191,7 +189,6 @@ public class EventHandler {
 		}
 
 		System.out.println(getKeyCodeString());
-
 		System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
 	}
 
@@ -202,7 +199,7 @@ public class EventHandler {
 	}
 
 	private String invalidEvent(int playerID) {
-		return "Invalid";
+		return "invalidEvent";
 	}
 
 	private String loginEvent(int playerID) {
@@ -220,7 +217,7 @@ public class EventHandler {
 
 		// globalEvent controlling
 		if (globalEvent == 0 && playerList[playerID][0] == 1){
-			
+
 			// starts countdown once the first player logon to the server
 			System.out.println("First player logon, \nCountdown starts now");
 			globalEvent = 1; 
@@ -305,14 +302,14 @@ public class EventHandler {
 		// Successful
 		String reply = "";
 
-		// check if player has >1 key to open chest
-		if (playerList[playerID][2] >= 1) {
+		// tinyos
+		// if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1)
 
-			// tinyos
-			// if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1)
-
-			// no tinyos
-			if (treasureList[playerLocation] == 1) {
+		// no tinyos
+		if (treasureList[playerLocation] == 1) {
+			
+			// check if player has >1 key to open chest
+			if (playerList[playerID][2] >= 1) {
 				while (true) {
 					// Based on current treasure location, remove it and
 					// generate the treasure at some other location
@@ -337,9 +334,9 @@ public class EventHandler {
 				playerList[playerID][2] -= 1;
 				reply = "Successful";
 			} else
-				reply = "NoChest";
+				reply = "NoKey";
 		} else
-			reply = "NoKey";
+			reply = "NoChest";
 
 		return reply;
 	}
@@ -397,80 +394,78 @@ public class EventHandler {
 
 		return playerScore;
 	}
-	
-	 String getKeyCodeString() {
+
+	String getKeyCodeString() {
 
 		String keyCodeString = "";
 
 		for (int i = 0; i < K_NUM; i++) {
-			keyCodeString = keyCodeString + keyCodeList[i] + "   ";
-			
+			keyCodeString += keyCodeList[i] + "   ";
+
 			if ((i+1)% 10 == 0)
-				keyCodeString = keyCodeString + "\n";
+				keyCodeString += "\n";
 		}
-		
+
 		return keyCodeString;
 	}
-	 
-	 String getPlayerInfoString() {
+
+	String getPlayerInfoString() {
 
 		String playerInfoString = "";
 
 		for (int i = 0; i < P_NUM; i++)
-			playerInfoString = playerInfoString + "Player " + i + " : " + "  logon: "
+			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
-					+ "  keysHeld: " + playerList[i][2] + "  Location: " + playerLocation[i] + "\n";
-		
+							+ "  keysHeld: " + playerList[i][2] + "  Location: " + playerLocation[i] + "\n";
+
 		return playerInfoString;
 	}
-	 
-	 String getTreasureInfoString() {
+
+	String getTreasureInfoString() {
 
 		String getTreasureInfoString = "";
 
 		for (int i = 0; i < N_NUM; i++) {
-			getTreasureInfoString = getTreasureInfoString + treasureList[i] + "   ";
-		if((i+1)% COLUMN == 0)
-			getTreasureInfoString = getTreasureInfoString + "\n";
+			getTreasureInfoString += treasureList[i] + "   ";
+			if((i+1)% COLUMN == 0)
+				getTreasureInfoString += "\n";
 		}
-		
+
 		return getTreasureInfoString;
 	}
-	 
-	 
-	
+
 	// global event scheduling class
 	class CountdownTask extends TimerTask {
-	    public void run() {
-	      System.out.println("countdown Time's up!");
-	      System.out.println("Game starts now!");
-	      globalEvent = 2;
-	  	  timer.schedule(new FallingCoinStartTask(), beforeFallingCoinsDurations * 1000);
-	      //timer.cancel(); //Not necessary because we call System.exit
-	     // System.exit(0); //Stops the AWT thread (and everything else)
-	    }
-	  }
-	
+		public void run() {
+			System.out.println("countdown Time's up!");
+			System.out.println("Game starts now!");
+			globalEvent = 2;
+			timer.schedule(new FallingCoinStartTask(), beforeFallingCoinsDurations * 1000);
+			//timer.cancel(); //Not necessary because we call System.exit
+			// System.exit(0); //Stops the AWT thread (and everything else)
+		}
+	}
+
 	class FallingCoinStartTask extends TimerTask {
-	    public void run() {
-	      System.out.println("Falling Coins starts now!");
-	      globalEvent = 3;
-	  	  timer.schedule(new FallingCoinEndTask(), fallingCoinsDurations * 1000);
-	    }
-	  }
+		public void run() {
+			System.out.println("Falling Coins starts now!");
+			globalEvent = 3;
+			timer.schedule(new FallingCoinEndTask(), fallingCoinsDurations * 1000);
+		}
+	}
 
 	class FallingCoinEndTask extends TimerTask {
-	    public void run() {
-	      System.out.println("Falling Coins ends now!");
-	      globalEvent = 4;
-	  	  timer.schedule(new EndofGameTask(), countdownDurations * 1000);
-	    }
-	  }
-	
+		public void run() {
+			System.out.println("Falling Coins ends now!");
+			globalEvent = 4;
+			timer.schedule(new EndofGameTask(), countdownDurations * 1000);
+		}
+	}
+
 	class EndofGameTask extends TimerTask {
-	    public void run() {
-	      System.out.println("END OF GAME!");
-	      globalEvent = 5;
-	    }
-	  }
+		public void run() {
+			System.out.println("END OF GAME!");
+			globalEvent = 5;
+		}
+	}
 }

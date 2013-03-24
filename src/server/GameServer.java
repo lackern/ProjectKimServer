@@ -12,9 +12,9 @@ public class GameServer {
 	
 	private static EventHandler eventHandler;
 	private static DatagramSocket socket ;
+	
 	public static void main(String[] args) throws Exception {
 
-	//public void connect() throws Exception { //newline
 		System.out.println("Game Server starting up... [GamerServer.java]");
 		
 		/* *** Initialization *** */
