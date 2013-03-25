@@ -1,9 +1,4 @@
-package server;
-/* CS3283 Project
- * 
- * Game Server: feedback to client's requests through UDP connections
- * 
- */
+
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

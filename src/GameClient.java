@@ -1,6 +1,6 @@
-package client;
 
-/* CS3283 Project
+
+/* CS3283/CS3284 Project
  * 
  * Game UDP Client: communicates to with server through UDP connections to get informations
  * 
@@ -10,7 +10,8 @@ import java.util.*;
 import java.net.*;
 
 public class GameClient {
-	private final int ROW = 3; // Number of rows of Nodes
+	
+	final int ROW = 3; // Number of rows of Nodes
 	final int COLUMN = 3; // Number of column of Nodes
 
 	final int N_NUM = 9; // Total number of Nodes
@@ -57,7 +58,8 @@ public class GameClient {
 	 */
 
 	final int port = 9001;
-	final String gameServerAddress = "10.0.2.2";
+	final String gameServerAddress = "localhost";
+	//final String gameServerAddress = "10.0.2.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
 

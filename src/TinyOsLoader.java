@@ -1,9 +1,4 @@
-package server;
-/* CS3283 Project
- * 
- * TinyOs: retrieve results from serial forwarder
- * 
- */
+
 
 import net.tinyos.message.*;
 import net.tinyos.util.*;

@@ -1,11 +1,11 @@
-package server;
+
 
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/* CS3283 Project
+/* CS3283/CS3284 Project
  * 
  * Event handler: Handles game events upon request
  * Based on different request from client and respond accordingly
@@ -188,7 +188,7 @@ public class EventHandler {
 			keyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
 		}
 
-		System.out.println(getKeyCodeString());
+		System.out.print(getKeyCodeString());
 		System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
 	}
 

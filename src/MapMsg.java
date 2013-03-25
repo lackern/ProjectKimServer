@@ -1,8 +1,8 @@
-package server;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-/* CS3283 Project
+/* CS3283/CS3284 Project
  * 
  * TinyOs
  * 

@@ -1,4 +1,4 @@
-package server;
+
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -20,7 +20,7 @@ public class GameServerGUI {
 
 	private JFrame frame;
 	private GameServer gameServer;
-	private ConnectThread connectThread;
+	private GameServerThread gameServerThread;
 
 	Button startButton = new Button("Start Server");
 	Button closeButton = new Button("Close Server");
@@ -39,7 +39,7 @@ public class GameServerGUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					System.out.print("Starting ProjectKim Server GUI");
+					System.out.println("Starting ProjectKim Server GUI");
 					GameServerGUI window = new GameServerGUI();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -71,8 +71,8 @@ public class GameServerGUI {
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					connectThread = new ConnectThread();
-					connectThread.start();
+					gameServerThread = new GameServerThread();
+					gameServerThread.start();
 					startButton.setEnabled(false);
 					closeButton.setEnabled(true);
 
@@ -183,7 +183,7 @@ public class GameServerGUI {
 	}
 
 
-	class ConnectThread extends Thread {
+	class GameServerThread extends Thread {
 
 		public void run() {
 			System.out.println("GUI initiatised!");
