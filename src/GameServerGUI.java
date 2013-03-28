@@ -10,14 +10,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.awt.Rectangle;
 import javax.swing.JTextArea;
 import java.awt.Insets;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.text.DefaultCaret;
-import java.awt.Label;
 import javax.swing.JButton;
+import javax.swing.border.TitledBorder;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import javax.swing.UIManager;
+import javax.swing.border.EtchedBorder;
+import java.awt.Font;
+import javax.swing.JTextField;
 
 public class GameServerGUI {
 
@@ -27,15 +32,24 @@ public class GameServerGUI {
 
 	JButton startButton = new JButton("Start Server");
 	JButton closeButton = new JButton("Close Server");
-	JButton btnMoveRightButton = new JButton(">");
+
 	JTextArea JConsole = new JTextArea();
 	JTextArea JKeyCode = new JTextArea();
 	JTextArea JPlayer = new JTextArea();
 	JTextArea JTreasure = new JTextArea();
-	private final Label labelTreasureList = new Label("Treasure List");
-	private final Label labelKeyCodeList = new Label("KeyCode List");
-	private final Label labelPlayerInfo = new Label("Player Info");
-	
+	JTextArea JControlHelp = new JTextArea();
+
+	JPanel panelKeyCodePairingList = new JPanel();
+	JPanel panelTreasureList = new JPanel();
+	JPanel panelPlayerInfo = new JPanel();
+	JPanel panelControls = new JPanel();
+
+	JButton btnMoveUp = new JButton("^");
+	JButton btnMoveDown = new JButton("v");
+	JButton btnMoveLeft = new JButton("<");
+	JButton btnMoveRight = new JButton(">");
+	private JTextField textFieldPlayerID;
+
 	/**
 	 * Launch the application.
 	 */
@@ -68,17 +82,137 @@ public class GameServerGUI {
 		frame = new JFrame("Project Kim Server");
 		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 559, 500);
+		frame.setBounds(100, 100, 600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JScrollPane JConsoleScrollPane = new JScrollPane();
+		JConsoleScrollPane.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Console", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		JConsoleScrollPane.setBounds(10, 253, 429, 305);
+
+		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		JConsoleScrollPane.setBackground(Color.LIGHT_GRAY);
+		frame.getContentPane().add(JConsoleScrollPane);
+
+		JConsoleScrollPane.setViewportView(JConsole);
+		JConsole.setMargin(new Insets(5, 5, 5, 5));
+		JConsole.setRows(5);
+		JConsole.setEditable(false);
+		JConsole.setText("Press Start to continue...");
+		panelKeyCodePairingList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panelKeyCodePairingList.setBounds(10, 11, 574, 100);
+
+		frame.getContentPane().add(panelKeyCodePairingList);
+		panelKeyCodePairingList.setLayout(new BorderLayout(0, 0));
+		JKeyCode.setLineWrap(true);
+		JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		JKeyCode.setEditable(false);
+		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
+
+		JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+				+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
+				+"Each KeyCode can only be use once by each player");
+		panelKeyCodePairingList.add(JKeyCode, BorderLayout.CENTER);
+		panelTreasureList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panelTreasureList.setBounds(10, 132, 170, 100);
+
+		frame.getContentPane().add(panelTreasureList);
+		panelTreasureList.setLayout(new BorderLayout(0, 0));
+		JTreasure.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Treasure List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelTreasureList.add(JTreasure, BorderLayout.CENTER);
+		JTreasure.setEditable(false);
+		JTreasure.setMargin(new Insets(5, 5, 5, 5));
+		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\nhas treasure chest");
+		panelPlayerInfo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panelPlayerInfo.setBounds(200, 132, 384, 100);
+
+		frame.getContentPane().add(panelPlayerInfo);
+		panelPlayerInfo.setLayout(new BorderLayout(0, 0));
+		JPlayer.setBorder(new TitledBorder(null, "Player Infomation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelPlayerInfo.add(JPlayer, BorderLayout.CENTER);
+
+		JPlayer.setEditable(false);		
+		JPlayer.setMargin(new Insets(5, 5, 5, 5));
+		JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
+				+"Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
+		panelControls.setBackground(Color.LIGHT_GRAY);
+		panelControls.setBorder(new TitledBorder(null, "Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelControls.setBounds(449, 253, 135, 305);
+
+		frame.getContentPane().add(panelControls);
+		btnMoveUp.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnMoveUp.setBounds(52, 89, 30, 30);
+		btnMoveUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int playerID = Integer.parseInt(textFieldPlayerID.getText());
+				if(playerID >= 0 && playerID <=3 )
+					gameServer.movePlayer(playerID,0);
+			}
+		});
+		panelControls.setLayout(null);
+		panelControls.add(btnMoveUp);
+		btnMoveUp.setMargin(new Insets(2, 2, 2, 2));
+		btnMoveUp.setEnabled(false);
+		btnMoveDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int playerID = Integer.parseInt(textFieldPlayerID.getText());
+				if(playerID >= 0 && playerID <=3 )
+					gameServer.movePlayer(playerID,1);
+			}
+		});
+		btnMoveDown.setBounds(52, 171, 30, 30);
+		panelControls.add(btnMoveDown);
+		btnMoveDown.setMargin(new Insets(2, 2, 2, 2));
+		btnMoveDown.setEnabled(false);
+		btnMoveLeft.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int playerID = Integer.parseInt(textFieldPlayerID.getText());
+				if(playerID >= 0 && playerID <=3 )
+					gameServer.movePlayer(playerID,2);
+			}
+		});
+		btnMoveLeft.setBounds(10, 130, 30, 30);
+		panelControls.add(btnMoveLeft);
+		btnMoveLeft.setMargin(new Insets(2, 2, 2, 2));
+		btnMoveLeft.setEnabled(false);
+		btnMoveRight.setBounds(95, 130, 30, 30);
+		panelControls.add(btnMoveRight);
+
+		btnMoveRight.setMargin(new Insets(2, 2, 2, 2));
+		btnMoveRight.setEnabled(false);
+		closeButton.setBounds(10, 55, 115, 23);
+		panelControls.add(closeButton);
+		closeButton.setMargin(new Insets(2, 5, 2, 5));
+		closeButton.setEnabled(false);
+		startButton.setBounds(10, 21, 115, 23);
+		panelControls.add(startButton);
 		startButton.setMargin(new Insets(2, 5, 2, 5));
 
-		startButton.setBounds(new Rectangle(449, 217, 94, 22));
+		textFieldPlayerID = new JTextField();
+		textFieldPlayerID.setText("1");
+		textFieldPlayerID.setEnabled(false);
+		textFieldPlayerID.setMargin(new Insets(5, 9, 5, 9));
+		textFieldPlayerID.setBounds(52, 130, 30, 30);
+		panelControls.add(textFieldPlayerID);
+		textFieldPlayerID.setColumns(10);
+		
+		JTextArea JControlHelp = new JTextArea();
+		JControlHelp.setMargin(new Insets(2, 5, 2, 5));
+		JControlHelp.setEditable(false);
+		JControlHelp.setText("Remote controls:\r\nEnter playerID\r\nPress the buttons \r\nto move around ");
+		JControlHelp.setBounds(10, 212, 115, 82);
+		panelControls.add(JControlHelp);
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					startButton.setEnabled(false);
 					closeButton.setEnabled(true);
-					btnMoveRightButton.setEnabled(true);
+					btnMoveUp.setEnabled(true);
+					btnMoveDown.setEnabled(true);
+					btnMoveLeft.setEnabled(true);
+					btnMoveRight.setEnabled(true);
+					textFieldPlayerID.setEnabled(true);
 					gameServerThread = new GameServerThread();
 					gameServerThread.start();
 
@@ -87,83 +221,36 @@ public class GameServerGUI {
 				}
 			}
 		});
-		closeButton.setMargin(new Insets(2, 5, 2, 5));
-		closeButton.setBounds(449, 250, 94, 22);
-		closeButton.setEnabled(false);
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					//connectThread.stop();
 					startButton.setEnabled(true);
 					closeButton.setEnabled(false);
-					btnMoveRightButton.setEnabled(false);
-					gameServer.dc();
+					btnMoveUp.setEnabled(false);
+					btnMoveDown.setEnabled(false);
+					btnMoveLeft.setEnabled(false);
+					btnMoveRight.setEnabled(false);
+					textFieldPlayerID.setEnabled(false);
+					JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+							+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
+							+"Each KeyCode can only be use once by each player");
+					JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\nhas treasure chest");
+					JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
+							+"Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
+					gameServer.disconnect();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
-		frame.getContentPane().setLayout(null);
-		frame.getContentPane().add(startButton);
-		frame.getContentPane().add(closeButton);
-
-		JScrollPane JConsoleScrollPane = new JScrollPane();
-		JConsoleScrollPane.setBounds(10, 196, 429, 263);
-
-		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		JConsoleScrollPane.setBackground(Color.BLACK);
-		frame.getContentPane().add(JConsoleScrollPane);
-		
-		JConsoleScrollPane.setViewportView(JConsole);
-		JConsole.setMargin(new Insets(5, 5, 5, 5));
-		JConsole.setRows(5);
-		JConsole.setEditable(false);
-		JConsole.setText("JConsole");
-		
-		JKeyCode.setBounds(10, 11, 533, 74);
-		JKeyCode.setEditable(false);
-		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
-		frame.getContentPane().add(JKeyCode);
-		JKeyCode.setText("????");
-		JPlayer.setBounds(185, 105, 358, 80);
-	
-		JPlayer.setEditable(false);		
-		JPlayer.setMargin(new Insets(5, 5, 5, 5));
-		frame.getContentPane().add(JPlayer);
-		JPlayer.setText("Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
-				+ "Player 1:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
-				+ "Player 2:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
-				+ "Player 3:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
-		JTreasure.setBounds(10, 105, 165, 80);
-		
-		frame.getContentPane().add(JTreasure);
-		JTreasure.setEditable(false);
-		JTreasure.setMargin(new Insets(5, 5, 5, 5));
-		JTreasure.setText("  ?  ?  ?\n  ?  ?  ?\n  ?  ?  ?");
-		
-		Label labelPKControls = new Label("Controls");
-		labelPKControls.setBounds(449, 196, 63, 13);
-		frame.getContentPane().add(labelPKControls);
-		labelTreasureList.setBounds(10, 84, 78, 15);
-		
-		frame.getContentPane().add(labelTreasureList);
-		labelKeyCodeList.setBounds(447, 296, 78, 13);
-		
-		frame.getContentPane().add(labelKeyCodeList);
-		labelPlayerInfo.setBounds(185, 85, 65, 14);
-		
-		frame.getContentPane().add(labelPlayerInfo);
-		
-		btnMoveRightButton.setMargin(new Insets(2, 2, 2, 2));
-		btnMoveRightButton.setEnabled(false);
-		btnMoveRightButton.addActionListener(new ActionListener() {
+		btnMoveRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				gameServer.movePlayer(1,3);
+				int playerID = Integer.parseInt(textFieldPlayerID.getText());
+				if(playerID >= 0 && playerID <=3 )
+					gameServer.movePlayer(playerID,3);
 			}
 		});
-		btnMoveRightButton.setBounds(507, 359, 36, 40);
-		frame.getContentPane().add(btnMoveRightButton);
 	}
 
 
@@ -191,16 +278,16 @@ public class GameServerGUI {
 		public void connect() throws Exception {
 
 			System.out.println("Game Server starting up... ");
-			JConsole.setText("JConsole\nGame Server starting up... ");
+			JConsole.setText("Press Start to continue...\nGame Server starting up... ");
 
 			/* *** Initialization *** */
 			String reply = ""; // stores the reply info
 			eventHandler = new EventHandler();
-			
+
 			JPlayer.setText(eventHandler.getPlayerInfoString());
 			JKeyCode.setText(eventHandler.getKeyCodeString());
 			JTreasure.setText(eventHandler.getTreasureInfoString());
-			
+
 			//use DatagramSocket for UDP connection
 			//@SuppressWarnings("resource")
 			socket = new DatagramSocket(9001);
@@ -221,7 +308,7 @@ public class GameServerGUI {
 				// pass client request to event handler to compute results
 
 				reply = eventHandler.computeEventsReply(request);
-				
+
 				/* ----------------------------------------------------- */
 
 				// convert reply into array of bytes (output buffer)
@@ -245,7 +332,7 @@ public class GameServerGUI {
 		public void movePlayer(int playerID, int direction) {
 			eventHandler.movePlayer(playerID, direction);
 			JPlayer.setText(eventHandler.getPlayerInfoString());
-			
+
 		}
 
 		String getPlayerInfoString(){	
@@ -256,8 +343,8 @@ public class GameServerGUI {
 			return eventHandler.getTreasureInfoString();
 		}
 
-		public void dc() throws Exception {
-			JConsole.setText(JConsole.getText() + "\nClosing server");
+		public void disconnect() throws Exception {
+			JConsole.setText(JConsole.getText() + "\nClosing server\nPress Start to continue...");
 			//socket.disconnect();
 
 			socket.close();

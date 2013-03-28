@@ -29,7 +29,7 @@ public class EventHandler {
 	final int mapUpdateEvent = 2;
 	final int openTreasureEvent = 3;
 	final int scoreUpdateEvent = 4;
-	final int addKeyEvent = 5;
+	final int addKeyCodeEvent = 5;
 	final int endOfGameEvent = 6;
 
 	// Various event durations (seconds)
@@ -131,7 +131,7 @@ public class EventHandler {
 					Integer.parseInt(requestToken.nextToken()));
 			break;
 
-		case addKeyEvent:
+		case addKeyCodeEvent:
 			reply = addKeyCodeEvent(playerID,
 					Integer.parseInt(requestToken.nextToken()));
 			break;
@@ -148,8 +148,29 @@ public class EventHandler {
 		return reply;
 	}
 
-	public void movePlayer(int playerID, int direction) {
-		playerLocation[playerID] += 1;
+	public void movePlayer(int playerID, int newDirection) {
+		int[][] newMove = new int[4][2];
+		newMove[0][0] = -1;
+		newMove[0][1] = 0;
+		newMove[1][0] = 1;
+		newMove[1][1] = 0;
+		newMove[2][0] = 0;
+		newMove[2][1] = -1;
+		newMove[3][0] = 0;
+		newMove[3][1] = 1;
+
+		int curX = playerLocation[playerID] / COLUMN;
+		int curY = playerLocation[playerID] % COLUMN;
+
+		if (!(curX + newMove[newDirection][0] < 0
+				|| curX + newMove[newDirection][0] >= ROW
+				|| curY + newMove[newDirection][1] < 0 || curY
+				+ newMove[newDirection][1] >= COLUMN)) {
+			curX += newMove[newDirection][0];
+			curY += newMove[newDirection][1];
+		}
+
+		playerLocation[playerID] = curX * COLUMN + curY;
 	}
 
 	private void initializeTreasureList() {
@@ -191,7 +212,7 @@ public class EventHandler {
 		for (int i = 0; i < P_NUM; i++)
 			System.out.println("Player " + i + ": " + " logon: "
 					+ playerList[i][0] + " Score: " + playerList[i][1]
-					+ " keysHeld: " + playerList[i][2]);
+							+ " keysHeld: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
 	}
@@ -203,7 +224,7 @@ public class EventHandler {
 			System.out.println(generatedkeyCodeList[i] + ";" + i + ";");
 		}
 		System.out
-				.println("KeyCode info randomly generated ...[EventHandler.java]");
+		.println("KeyCode info randomly generated ...[EventHandler.java]");
 	}
 
 	private void loadKeyCodeList() throws NumberFormatException, IOException {
@@ -406,10 +427,11 @@ public class EventHandler {
 		for (int i = 0; i < K_NUM; i++) {
 			if (loadedKeyCodeList[i] == keyCode) { // KeyCode found
 				//TinyOS tinyOsLoader.getPlayerLocation(playerID);
-				//if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM + 1]){ // player at the right location
+				//if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
 				if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
 					if(keyCodeLocationPairingList[i][playerID] == 0){// KeyCode not used before
 						keyCodeLocationPairingList[i][playerID] = 1;
+						playerList[playerID][2] += 1;
 						reply = "Successful";
 						break;
 					}
@@ -441,8 +463,9 @@ public class EventHandler {
 	String getKeyCodeString() {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
-			keyCodeString += loadedKeyCodeList[i] + "["
-					+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
+			if(i < COLUMN)
+			keyCodeString += loadedKeyCodeList[i] + "[0"	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
+			else keyCodeString += loadedKeyCodeList[i] + "["	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 
 			if ((i + 1) % 10 == 0)
 				keyCodeString += "\n";
@@ -456,8 +479,8 @@ public class EventHandler {
 		for (int i = 0; i < P_NUM; i++) {
 			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
-					+ "  keysHeld: " + playerList[i][2] + "  Location: "
-					+ playerLocation[i] + "\n";
+							+ "  keysHeld: " + playerList[i][2] + "  Location: "
+							+ playerLocation[i] + "\n";
 		}
 		return playerInfoString;
 	}
