@@ -123,7 +123,7 @@ public class GameServerGUI {
 		panelTreasureList.add(JTreasure, BorderLayout.CENTER);
 		JTreasure.setEditable(false);
 		JTreasure.setMargin(new Insets(5, 5, 5, 5));
-		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\nhas treasure chest");
+		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest");
 		panelPlayerInfo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panelPlayerInfo.setBounds(200, 132, 384, 100);
 
@@ -235,7 +235,7 @@ public class GameServerGUI {
 					JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
 							+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
 							+"Each KeyCode can only be use once by each player");
-					JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\nhas treasure chest");
+					JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest");
 					JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
 							+"Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
 					gameServer.disconnect();
