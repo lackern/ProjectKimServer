@@ -1,6 +1,6 @@
 /* CS3283/CS3284 Project
  * 
- * Client simulator
+ * GameClient simulator
  * 
  */
 public class GameClientSimulator {
@@ -27,8 +27,8 @@ public class GameClientSimulator {
 //		System.out.println(client.loginEvent(0));
 //
 		/* add key event test */
-		System.out.println(client.addKeyEvent(0,1111));
-		System.out.println(client.addKeyEvent(0,2527));
+		System.out.println(client.addKeyCodeEvent(0,1111));
+		System.out.println(client.addKeyCodeEvent(0,2527));
 
 		/* open treasure chest test */
 		System.out.println(client.openTreasureEvent(0));

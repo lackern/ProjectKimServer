@@ -6,7 +6,6 @@
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
-import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.DatagramPacket;
@@ -26,8 +25,9 @@ public class GameServerGUI {
 	private GameServer gameServer;
 	private GameServerThread gameServerThread;
 
-	Button startButton = new Button("Start Server");
-	Button closeButton = new Button("Close Server");
+	JButton startButton = new JButton("Start Server");
+	JButton closeButton = new JButton("Close Server");
+	JButton btnMoveRightButton = new JButton(">");
 	JTextArea JConsole = new JTextArea();
 	JTextArea JKeyCode = new JTextArea();
 	JTextArea JPlayer = new JTextArea();
@@ -70,34 +70,35 @@ public class GameServerGUI {
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 559, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		startButton.setMargin(new Insets(2, 5, 2, 5));
 
-		startButton.setBounds(new Rectangle(10, 29, 94, 22));
+		startButton.setBounds(new Rectangle(449, 217, 94, 22));
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					gameServerThread = new GameServerThread();
-					gameServerThread.start();
 					startButton.setEnabled(false);
 					closeButton.setEnabled(true);
+					btnMoveRightButton.setEnabled(true);
+					gameServerThread = new GameServerThread();
+					gameServerThread.start();
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		});
-		closeButton.setBounds(10, 57, 94, 22);
+		closeButton.setMargin(new Insets(2, 5, 2, 5));
+		closeButton.setBounds(449, 250, 94, 22);
 		closeButton.setEnabled(false);
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					//connectThread.stop();
-					gameServer.dc();
 					startButton.setEnabled(true);
 					closeButton.setEnabled(false);
-
+					btnMoveRightButton.setEnabled(false);
+					gameServer.dc();
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -107,23 +108,25 @@ public class GameServerGUI {
 		frame.getContentPane().add(closeButton);
 
 		JScrollPane JConsoleScrollPane = new JScrollPane();
-		JConsoleScrollPane.setBounds(10, 198, 474, 261);
+		JConsoleScrollPane.setBounds(10, 196, 429, 263);
 
 		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		JConsoleScrollPane.setBackground(Color.BLACK);
 		frame.getContentPane().add(JConsoleScrollPane);
+		
 		JConsoleScrollPane.setViewportView(JConsole);
 		JConsole.setMargin(new Insets(5, 5, 5, 5));
 		JConsole.setRows(5);
 		JConsole.setEditable(false);
 		JConsole.setText("JConsole");
-		JKeyCode.setBounds(110, 29, 433, 50);
+		
+		JKeyCode.setBounds(10, 11, 533, 74);
 		JKeyCode.setEditable(false);
 		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
 		frame.getContentPane().add(JKeyCode);
 		JKeyCode.setText("????");
-		JPlayer.setBounds(199, 105, 344, 87);
+		JPlayer.setBounds(185, 105, 358, 80);
 	
 		JPlayer.setEditable(false);		
 		JPlayer.setMargin(new Insets(5, 5, 5, 5));
@@ -132,35 +135,35 @@ public class GameServerGUI {
 				+ "Player 1:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
 				+ "Player 2:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
 				+ "Player 3:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
-		JTreasure.setBounds(10, 105, 175, 87);
+		JTreasure.setBounds(10, 105, 165, 80);
 		
 		frame.getContentPane().add(JTreasure);
 		JTreasure.setEditable(false);
-		JTreasure.setMargin(new Insets(11, 11, 11, 11));
+		JTreasure.setMargin(new Insets(5, 5, 5, 5));
 		JTreasure.setText("  ?  ?  ?\n  ?  ?  ?\n  ?  ?  ?");
 		
-		Label labelPKServer = new Label("PK Server");
-		labelPKServer.setBounds(25, 10, 63, 13);
-		frame.getContentPane().add(labelPKServer);
-		labelTreasureList.setBounds(26, 85, 78, 15);
+		Label labelPKControls = new Label("Controls");
+		labelPKControls.setBounds(449, 196, 63, 13);
+		frame.getContentPane().add(labelPKControls);
+		labelTreasureList.setBounds(10, 84, 78, 15);
 		
 		frame.getContentPane().add(labelTreasureList);
-		labelKeyCodeList.setBounds(120, 10, 78, 13);
+		labelKeyCodeList.setBounds(447, 296, 78, 13);
 		
 		frame.getContentPane().add(labelKeyCodeList);
-		labelPlayerInfo.setBounds(214, 85, 65, 14);
+		labelPlayerInfo.setBounds(185, 85, 65, 14);
 		
 		frame.getContentPane().add(labelPlayerInfo);
 		
-		JButton btnRightButton = new JButton(">");
-		btnRightButton.setMargin(new Insets(2, 2, 2, 2));
-		btnRightButton.addActionListener(new ActionListener() {
+		btnMoveRightButton.setMargin(new Insets(2, 2, 2, 2));
+		btnMoveRightButton.setEnabled(false);
+		btnMoveRightButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				gameServer.moveRight(1);
+				gameServer.movePlayer(1,3);
 			}
 		});
-		btnRightButton.setBounds(507, 203, 36, 40);
-		frame.getContentPane().add(btnRightButton);
+		btnMoveRightButton.setBounds(507, 359, 36, 40);
+		frame.getContentPane().add(btnMoveRightButton);
 	}
 
 
@@ -172,7 +175,7 @@ public class GameServerGUI {
 				gameServer = new GameServer();
 				gameServer.connect();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// 
 				e.printStackTrace();
 			}
 
@@ -239,9 +242,8 @@ public class GameServerGUI {
 
 		}
 
-		public void moveRight(int playerID) {
-			// TODO Auto-generated method stub
-			eventHandler.moveRight(playerID);
+		public void movePlayer(int playerID, int direction) {
+			eventHandler.movePlayer(playerID, direction);
 			JPlayer.setText(eventHandler.getPlayerInfoString());
 			
 		}

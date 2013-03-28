@@ -21,7 +21,7 @@ public class EventHandler {
 	final int N_NUM = ROW * COLUMN; // Total number of Nodes
 	final int T_NUM = N_NUM / 3; // Number of treasures on the map
 	final int P_NUM = 4; // Number of players
-	final int K_NUM = 20; // Number of key codes
+	final int K_NUM = 40; // Number of key codes
 
 	// Event code
 	final int invalidEvent = 0;
@@ -46,9 +46,12 @@ public class EventHandler {
 	// Currently stored values are: logged on?, playerScore and number of keys
 	private int[][] playerList;
 	private int[] treasureList; // stores treasure location
-	private int[] keyCodeList;  // stores the key codes
-	private int[] keyCodeList2;  // stores the key codes
-	private int[][] keyCodeLocationPairingList;  // stores the pairing information and number of times the key code have been used
+	private int[] generatedkeyCodeList; // stores the generated key codes
+	private int[] loadedKeyCodeList; // stores the key codes
+	private int[][] keyCodeLocationPairingList; // stores the pairing
+	// information and number of
+	// times the key code have been
+	// used
 
 	// globalEvent code: Stores the current global game status
 	// 0 = pre-game
@@ -57,10 +60,11 @@ public class EventHandler {
 	// 3 = falling coins starts
 	// 4 = falling coins ends
 	// 5 = game end
-	private int globalEvent;
+	private int globalEventStatus;
 	Timer timer;
 
 	// for testing purpose
+	boolean generateNewKeyCodeList = false;
 	private static int[] playerLocation;
 
 	// TinyOS
@@ -72,18 +76,21 @@ public class EventHandler {
 		// TinyOS
 		// tinyOsLoader = new TinyOsLoader(P_NUM);
 		randomGenerator = new Random();
+		if (generateNewKeyCodeList)
+			generateRandomKeyCodeList();
+
 		initializeTreasureList();
 		initializePlayerList();
-		randomGenerateKeyCodeList();
-		globalEvent = 0;
+		globalEventStatus = 0;
 		timer = new Timer();
 
 		try {
 			loadKeyCodeList();
 		} catch (NumberFormatException | IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println(e);
 			e.printStackTrace();
 		}
+
 		// For testing purpose when TinyOS is not in use.
 		initializePlayerLocation();
 	}
@@ -125,7 +132,7 @@ public class EventHandler {
 			break;
 
 		case addKeyEvent:
-			reply = addKeyEvent(playerID,
+			reply = addKeyCodeEvent(playerID,
 					Integer.parseInt(requestToken.nextToken()));
 			break;
 
@@ -140,9 +147,9 @@ public class EventHandler {
 
 		return reply;
 	}
-	
-	public void moveRight(int playerID) {
-		playerLocation[playerID] +=1;
+
+	public void movePlayer(int playerID, int direction) {
+		playerLocation[playerID] += 1;
 	}
 
 	private void initializeTreasureList() {
@@ -166,12 +173,11 @@ public class EventHandler {
 
 		for (int i = 0; i < N_NUM; i++) {
 			System.out.print(treasureList[i] + " ");
-			if((i+1)%COLUMN == 0)
+			if ((i + 1) % COLUMN == 0)
 				System.out.print("\n");
 		}
 
-		System.out
-		.println("Treasure info initiatised ...[EventHandler.java]");
+		System.out.println("Treasure info initiatised ...[EventHandler.java]");
 	}
 
 	private void initializePlayerList() {
@@ -185,49 +191,48 @@ public class EventHandler {
 		for (int i = 0; i < P_NUM; i++)
 			System.out.println("Player " + i + ": " + " logon: "
 					+ playerList[i][0] + " Score: " + playerList[i][1]
-							+ " keysHeld: " + playerList[i][2]);
+					+ " keysHeld: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
 	}
 
-	private void randomGenerateKeyCodeList() {
-		keyCodeList = new int[K_NUM];
+	private void generateRandomKeyCodeList() {
+		generatedkeyCodeList = new int[K_NUM];
 		for (int i = 0; i < K_NUM; i++) {
-			keyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
+			generatedkeyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
+			System.out.println(generatedkeyCodeList[i] + ";" + i + ";");
 		}
-		System.out.print(getKeyCodeString());
-		System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
+		System.out
+				.println("KeyCode info randomly generated ...[EventHandler.java]");
 	}
 
 	private void loadKeyCodeList() throws NumberFormatException, IOException {
 
-		keyCodeList2 = new int[K_NUM];
+		loadedKeyCodeList = new int[K_NUM];
 		keyCodeLocationPairingList = new int[K_NUM][P_NUM + 1];
 		// initialize number of tries keyCode used by player to 0
-		for(int i = 0; i < K_NUM; i++){
-			for(int j = 0; j < P_NUM; j++){
-				keyCodeLocationPairingList[i][j] = 0 ;
+		for (int i = 0; i < K_NUM; i++) {
+			for (int j = 0; j < P_NUM; j++) {
+				keyCodeLocationPairingList[i][j] = 0;
 			}
 		}
 
-		BufferedReader in = new BufferedReader(new FileReader("src/keyCodeList.txt"));
+		BufferedReader in = new BufferedReader(new FileReader(
+				"src/keyCodeList.txt"));
 		StringTokenizer stringToken;
 
-		for (int i = 0; i < K_NUM; i++){
+		for (int i = 0; i < K_NUM; i++) {
 			String string = in.readLine();
 			stringToken = new StringTokenizer(string, ";");
-
-			keyCodeList2[i] = Integer.parseInt(stringToken.nextToken());
-			keyCodeLocationPairingList[i][P_NUM] = Integer.parseInt(stringToken.nextToken());
-			System.out.print(keyCodeList2[i] +"/"+ keyCodeLocationPairingList[i][P_NUM] + " ");
-			if(i == 9)
-				System.out.println();
+			loadedKeyCodeList[i] = Integer.parseInt(stringToken.nextToken());
+			keyCodeLocationPairingList[i][P_NUM] = Integer.parseInt(stringToken
+					.nextToken());
 		}
 
-		//System.out.print(getKeyCodeString());
-		//System.out.println("KeyCode info initiatised/loaded ...[EventHandler.java]");
-
 		in.close();
+		System.out.print(getKeyCodeString());
+		System.out.println("KeyCode info loaded ...[EventHandler.java]");
+
 	}
 
 	private void initializePlayerLocation() {
@@ -240,7 +245,7 @@ public class EventHandler {
 		return "invalidEvent";
 	}
 
-	/* Game Server's loginEvent reply format: Failure or Successful or Already Logon */
+	/* Game Server's loginEvent reply format: Failure or Successful or AlreadyLogon */
 	private String loginEvent(int playerID) {
 
 		String reply = "";
@@ -251,14 +256,14 @@ public class EventHandler {
 			playerList[playerID][0] = 1;
 			reply = "Successful";
 		} else if (playerList[playerID][0] == 1)
-			reply = "Already Logon";
+			reply = "AlreadyLogon";
 
 		// globalEvent controlling
-		if (globalEvent == 0 && playerList[playerID][0] == 1){
+		if (globalEventStatus == 0 && playerList[playerID][0] == 1) {
 
 			// starts countdown once the first player logon to the server
 			System.out.println("First player logon, \nCountdown starts now");
-			globalEvent = 1; 
+			globalEventStatus = 1;
 			timer.schedule(new CountdownTask(), countdownDurations * 1000);
 			timer.schedule(new EndofGameTask(), totalGameDurations * 1000);
 		}
@@ -266,11 +271,11 @@ public class EventHandler {
 		return reply;
 	}
 
-	/* Return player's game info upon request
-	 * p1 logon status, p1 score, p1 keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, global event status 	
+	/*
+	 * Return player's game info upon request p1 logon status, p1 score, p1
+	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus
 	 */
 	private String mapUpdateEvent(int playerID) {
-
 
 		String reply = "";
 
@@ -304,14 +309,14 @@ public class EventHandler {
 
 			int curX = playerLocation[i] / COLUMN;
 			int curY = playerLocation[i] % COLUMN;
-			
+
 			while (true) {
 				int newDirection = randomGenerator.nextInt(4);
 
 				if (!(curX + newMove[newDirection][0] < 0
 						|| curX + newMove[newDirection][0] >= ROW
-						|| curY + newMove[newDirection][1] < 0 
-						|| curY + newMove[newDirection][1] >= COLUMN)) {
+						|| curY + newMove[newDirection][1] < 0 || curY
+						+ newMove[newDirection][1] >= COLUMN)) {
 					curX += newMove[newDirection][0];
 					curY += newMove[newDirection][1];
 					break;
@@ -319,7 +324,7 @@ public class EventHandler {
 
 			}
 
-		//	playerLocation[i] = curX * COLUMN + curY;
+			// playerLocation[i] = curX * COLUMN + curY;
 			l_reply += playerLocation[i] + ";";
 		}
 
@@ -329,7 +334,7 @@ public class EventHandler {
 			t_reply += ";";
 		}
 
-		g_reply = globalEvent + ";";
+		g_reply = globalEventStatus + ";";
 
 		reply = l_reply + t_reply + g_reply;
 
@@ -394,94 +399,94 @@ public class EventHandler {
 		return reply;
 	}
 
-	/* Checks the validity of a keyCode */
-	private boolean checkKeyCodeValidity(int keyCode) {
-		for (int i = 0; i < K_NUM; i++) {
-			if (keyCodeList[i] == keyCode)
-				return true;
-		}
-		return false;
-	}
-
-	/* Game Server's addKeyEvent based on input keyCode, reply format: Failure or Successful */
-	private String addKeyEvent(int playerID, int keyCode) {
+	/* Game Server's addKeyCodeEvent reply format: InvalidKeyCode, InvalidLocation, KeyCodeUsed or Successful */
+	private String addKeyCodeEvent(int playerID, int keyCode) {
 		String reply = "";
 
-		if (checkKeyCodeValidity(keyCode) == true) {
-			playerList[playerID][2] += 1;
-			reply = "Successful";
-		} else
-			reply = "Failure";
+		for (int i = 0; i < K_NUM; i++) {
+			if (loadedKeyCodeList[i] == keyCode) { // KeyCode found
+				//TinyOS tinyOsLoader.getPlayerLocation(playerID);
+				//if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM + 1]){ // player at the right location
+				if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
+					if(keyCodeLocationPairingList[i][playerID] == 0){// KeyCode not used before
+						keyCodeLocationPairingList[i][playerID] = 1;
+						reply = "Successful";
+						break;
+					}
+					else reply = "KeyCodeUsed";
+					break;
+				}
+				else reply = "InvalidLocation";
+				break;
+			} else
+				reply = "InvalidKeyCode";
+		}
 
 		System.out.println("Player: " + playerID + " Keycode: " + keyCode + " request for addKeyCode");
 		return reply;
 	}
 
+	/* not in use atm */
 	private String endOfGameEvent(int playerID) {
-
 		String playerScore = "";
-
 		for (int i = 0; i < P_NUM; i++) {
 			playerScore += playerList[i][1];
 			if (i != (P_NUM - 1))
 				playerScore += ";";
 		}
-
 		return playerScore;
 	}
 
 	/* Returns a string for GUI display */
 	String getKeyCodeString() {
-
 		String keyCodeString = "";
-
 		for (int i = 0; i < K_NUM; i++) {
-			keyCodeString += keyCodeList[i] + "   ";
+			keyCodeString += loadedKeyCodeList[i] + "["
+					+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 
-			if ((i+1)% 10 == 0)
+			if ((i + 1) % 10 == 0)
 				keyCodeString += "\n";
 		}
-
 		return keyCodeString;
 	}
 
 	/* Returns a string for GUI display */
 	String getPlayerInfoString() {
-
 		String playerInfoString = "";
-
-		for (int i = 0; i < P_NUM; i++)
+		for (int i = 0; i < P_NUM; i++) {
 			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
-							+ "  keysHeld: " + playerList[i][2] + "  Location: " + playerLocation[i] + "\n";
-
+					+ "  keysHeld: " + playerList[i][2] + "  Location: "
+					+ playerLocation[i] + "\n";
+		}
 		return playerInfoString;
 	}
 
 	/* Returns a string for GUI display */
 	String getTreasureInfoString() {
-
 		String getTreasureInfoString = "";
-
 		for (int i = 0; i < N_NUM; i++) {
 			getTreasureInfoString += treasureList[i] + "   ";
-			if((i+1)% COLUMN == 0)
+			if ((i + 1) % COLUMN == 0)
 				getTreasureInfoString += "\n";
 		}
 		return getTreasureInfoString;
 	}
 
-	/* global event scheduling classes */
-
-	/* pre-game countdown to start of actual game */
+	/*
+	 * global event scheduling classes
+	 * 
+	 * /
+	 * 
+	 * /* pre-game countdown to start of actual game
+	 */
 	class CountdownTask extends TimerTask {
 		public void run() {
 			System.out.println("countdown Time's up!");
 			System.out.println("Game starts now!");
-			globalEvent = 2;
-			timer.schedule(new FallingCoinStartTask(), beforeFallingCoinsDurations * 1000);
-			//timer.cancel(); //Not necessary because we call System.exit
-			// System.exit(0); //Stops the AWT thread (and everything else)
+			globalEventStatus = 2;
+			timer.schedule(new FallingCoinStartTask(),
+					beforeFallingCoinsDurations * 1000);
 		}
 	}
 
@@ -489,8 +494,9 @@ public class EventHandler {
 	class FallingCoinStartTask extends TimerTask {
 		public void run() {
 			System.out.println("Falling Coins starts now!");
-			globalEvent = 3;
-			timer.schedule(new FallingCoinEndTask(), fallingCoinsDurations * 1000);
+			globalEventStatus = 3;
+			timer.schedule(new FallingCoinEndTask(),
+					fallingCoinsDurations * 1000);
 		}
 	}
 
@@ -498,16 +504,17 @@ public class EventHandler {
 	class FallingCoinEndTask extends TimerTask {
 		public void run() {
 			System.out.println("Falling Coins ends now!");
-			globalEvent = 4;
-			//	timer.schedule(new EndofGameTask(), countdownDurations * 1000);
+			globalEventStatus = 4;
 		}
 	}
 
-	/* End of game */
+	/* End of whole game */
 	class EndofGameTask extends TimerTask {
 		public void run() {
 			System.out.println("END OF GAME!");
-			globalEvent = 5;
+			globalEventStatus = 5;
+			timer.cancel();
+			// System.exit(0); //Stops the AWT thread (and everything else)
 		}
 	}
 
