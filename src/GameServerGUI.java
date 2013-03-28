@@ -1,4 +1,8 @@
-
+/* CS3283/CS3284 Project
+ * 
+ * Game Server GUI: simple graphical user interface for the game server
+ * 
+ */
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -9,12 +13,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.awt.Rectangle;
 import javax.swing.JTextArea;
-import javax.swing.SpringLayout;
 import java.awt.Insets;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.text.DefaultCaret;
 import java.awt.Label;
+import javax.swing.JButton;
 
 public class GameServerGUI {
 
@@ -64,10 +68,10 @@ public class GameServerGUI {
 		frame = new JFrame("Project Kim Server");
 		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 500, 500);
+		frame.setBounds(100, 100, 559, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		startButton.setBounds(new Rectangle(0, 0, 55, 55));
+		startButton.setBounds(new Rectangle(10, 29, 94, 22));
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -82,6 +86,7 @@ public class GameServerGUI {
 				}
 			}
 		});
+		closeButton.setBounds(10, 57, 94, 22);
 		closeButton.setEnabled(false);
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -97,63 +102,28 @@ public class GameServerGUI {
 				}
 			}
 		});
-		
-		SpringLayout springLayout = new SpringLayout();
-		springLayout.putConstraint(SpringLayout.NORTH, labelPlayerInfo, 6, SpringLayout.SOUTH, JKeyCode);
-		springLayout.putConstraint(SpringLayout.WEST, labelPlayerInfo, 10, SpringLayout.WEST, JKeyCode);
-		springLayout.putConstraint(SpringLayout.SOUTH, labelPlayerInfo, -6, SpringLayout.NORTH, JPlayer);
-		springLayout.putConstraint(SpringLayout.NORTH, labelKeyCodeList, -19, SpringLayout.NORTH, JKeyCode);
-		springLayout.putConstraint(SpringLayout.SOUTH, labelKeyCodeList, -6, SpringLayout.NORTH, JKeyCode);
-		springLayout.putConstraint(SpringLayout.NORTH, labelTreasureList, 6, SpringLayout.SOUTH, closeButton);
-		springLayout.putConstraint(SpringLayout.SOUTH, labelTreasureList, -5, SpringLayout.NORTH, JTreasure);
-		springLayout.putConstraint(SpringLayout.EAST, labelTreasureList, 0, SpringLayout.EAST, startButton);
-		springLayout.putConstraint(SpringLayout.NORTH, JTreasure, 0, SpringLayout.NORTH, JPlayer);
-		springLayout.putConstraint(SpringLayout.WEST, JTreasure, 0, SpringLayout.WEST, startButton);
-		springLayout.putConstraint(SpringLayout.EAST, JTreasure, -6, SpringLayout.WEST, JPlayer);
-		springLayout.putConstraint(SpringLayout.WEST, JPlayer, 0, SpringLayout.WEST, JKeyCode);
-		springLayout.putConstraint(SpringLayout.NORTH, JPlayer, 105, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, JPlayer, -10, SpringLayout.EAST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, closeButton, 10, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, closeButton, -6, SpringLayout.WEST, JKeyCode);
-		springLayout.putConstraint(SpringLayout.WEST, startButton, 10, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, startButton, -6, SpringLayout.WEST, JKeyCode);
-		springLayout.putConstraint(SpringLayout.SOUTH, JKeyCode, 0, SpringLayout.SOUTH, closeButton);
-		springLayout.putConstraint(SpringLayout.NORTH, JKeyCode, 29, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.NORTH, closeButton, 57, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, closeButton, -390, SpringLayout.SOUTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, startButton, -6, SpringLayout.NORTH, closeButton);
-		springLayout.putConstraint(SpringLayout.WEST, JKeyCode, 110, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, JKeyCode, -10, SpringLayout.EAST, frame.getContentPane());
-		frame.getContentPane().setLayout(springLayout);
+		frame.getContentPane().setLayout(null);
 		frame.getContentPane().add(startButton);
 		frame.getContentPane().add(closeButton);
 
 		JScrollPane JConsoleScrollPane = new JScrollPane();
-		springLayout.putConstraint(SpringLayout.SOUTH, JTreasure, -6, SpringLayout.NORTH, JConsoleScrollPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, JPlayer, -6, SpringLayout.NORTH, JConsoleScrollPane);
-		springLayout.putConstraint(SpringLayout.NORTH, JConsoleScrollPane, 198, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, JConsoleScrollPane, -10, SpringLayout.SOUTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, JConsoleScrollPane, 10, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, JConsoleScrollPane, -10, SpringLayout.EAST, frame.getContentPane());
+		JConsoleScrollPane.setBounds(10, 198, 474, 261);
 
 		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		JConsoleScrollPane.setBackground(Color.BLACK);
 		frame.getContentPane().add(JConsoleScrollPane);
 		JConsoleScrollPane.setViewportView(JConsole);
-		
-		springLayout.putConstraint(SpringLayout.NORTH, JConsole, 84, SpringLayout.SOUTH, closeButton);
-		springLayout.putConstraint(SpringLayout.WEST, JConsole, 0, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, JConsole, 0, SpringLayout.SOUTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, JConsole, -242, SpringLayout.EAST, frame.getContentPane());
 		JConsole.setMargin(new Insets(5, 5, 5, 5));
 		JConsole.setRows(5);
 		JConsole.setEditable(false);
 		JConsole.setText("JConsole");
+		JKeyCode.setBounds(110, 29, 433, 50);
 		JKeyCode.setEditable(false);
 		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
 		frame.getContentPane().add(JKeyCode);
 		JKeyCode.setText("????");
+		JPlayer.setBounds(199, 105, 344, 87);
 	
 		JPlayer.setEditable(false);		
 		JPlayer.setMargin(new Insets(5, 5, 5, 5));
@@ -162,6 +132,7 @@ public class GameServerGUI {
 				+ "Player 1:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
 				+ "Player 2:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n" 
 				+ "Player 3:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
+		JTreasure.setBounds(10, 105, 175, 87);
 		
 		frame.getContentPane().add(JTreasure);
 		JTreasure.setEditable(false);
@@ -169,17 +140,27 @@ public class GameServerGUI {
 		JTreasure.setText("  ?  ?  ?\n  ?  ?  ?\n  ?  ?  ?");
 		
 		Label labelPKServer = new Label("PK Server");
-		springLayout.putConstraint(SpringLayout.WEST, labelKeyCodeList, 32, SpringLayout.EAST, labelPKServer);
-		springLayout.putConstraint(SpringLayout.NORTH, labelPKServer, 10, SpringLayout.NORTH, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, labelPKServer, 25, SpringLayout.WEST, frame.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, labelPKServer, -6, SpringLayout.NORTH, startButton);
+		labelPKServer.setBounds(25, 10, 63, 13);
 		frame.getContentPane().add(labelPKServer);
+		labelTreasureList.setBounds(26, 85, 78, 15);
 		
 		frame.getContentPane().add(labelTreasureList);
+		labelKeyCodeList.setBounds(120, 10, 78, 13);
 		
 		frame.getContentPane().add(labelKeyCodeList);
+		labelPlayerInfo.setBounds(214, 85, 65, 14);
 		
 		frame.getContentPane().add(labelPlayerInfo);
+		
+		JButton btnRightButton = new JButton(">");
+		btnRightButton.setMargin(new Insets(2, 2, 2, 2));
+		btnRightButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				gameServer.moveRight(1);
+			}
+		});
+		btnRightButton.setBounds(507, 203, 36, 40);
+		frame.getContentPane().add(btnRightButton);
 	}
 
 
@@ -256,6 +237,13 @@ public class GameServerGUI {
 				JTreasure.setText(eventHandler.getTreasureInfoString());
 			}
 
+		}
+
+		public void moveRight(int playerID) {
+			// TODO Auto-generated method stub
+			eventHandler.moveRight(playerID);
+			JPlayer.setText(eventHandler.getPlayerInfoString());
+			
 		}
 
 		String getPlayerInfoString(){	
