@@ -9,13 +9,13 @@ import java.net.*;
 
 public class GameClient {
 
-	final int ROW = 4; // Number of rows of Nodes
-	final int COLUMN = 10; // Number of column of Nodes
+	final int ROW = 7; // Number of rows of Nodes
+	final int COLUMN = 14; // Number of column of Nodes
 
 	final int N_NUM = ROW * COLUMN; // Total number of Nodes
 	final int T_NUM = N_NUM / 3; // Number of treasures on the map
 	final int P_NUM = 4; // Number of players
-	final int K_NUM = 20; // Number of key codes
+	final int K_NUM = N_NUM; // Number of key codes
 
 	// Event code
 	final int invalidEvent = 0;
