@@ -23,7 +23,7 @@ public class GameClientSimulator {
 
 		/* Login test */
 		//System.out.println(client.loginEvent(99));
-//		System.out.println(client.loginEvent(0));
+		System.out.println(client.loginEvent(0));
 //		System.out.println(client.loginEvent(0));
 //
 		/* add key event test */
@@ -52,6 +52,7 @@ public class GameClientSimulator {
 		while(true){
 			client.mapUpdateEvent(0);
 			Thread.sleep(500);
+			System.out.println("clientCD: " + client.getcurrentCountdownTime());
 		}
 
 	}

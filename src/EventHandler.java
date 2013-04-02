@@ -37,6 +37,7 @@ public class EventHandler {
 	int beforeFallingCoinsDurations = 6;
 	int fallingCoinsDurations = 6;
 	int totalGameDurations = 30;
+	int currentCountdownTime = countdownDurations;
 
 	Random randomGenerator;
 
@@ -285,7 +286,8 @@ public class EventHandler {
 			// starts countdown once the first player logon to the server
 			System.out.println("First player logon, \nCountdown starts now");
 			globalEventStatus = 1;
-			timer.schedule(new CountdownTask(), countdownDurations * 1000);
+			timer.schedule(new CountdownTask(), 1000);
+			System.out.println("countdown Time: " + currentCountdownTime);
 			timer.schedule(new EndofGameTask(), totalGameDurations * 1000);
 		}
 
@@ -355,7 +357,7 @@ public class EventHandler {
 			t_reply += ";";
 		}
 
-		g_reply = globalEventStatus + ";";
+		g_reply = globalEventStatus + ";" + currentCountdownTime + ";";
 
 		reply = l_reply + t_reply + g_reply;
 
@@ -463,7 +465,7 @@ public class EventHandler {
 	String getKeyCodeString() {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
-			if(i < COLUMN)
+			if(i < 10)
 			keyCodeString += loadedKeyCodeList[i] + "[0"	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 			else keyCodeString += loadedKeyCodeList[i] + "["	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 
@@ -496,6 +498,10 @@ public class EventHandler {
 		return getTreasureInfoString;
 	}
 
+	int getGlobalEventStatus(){
+		return globalEventStatus;
+	}
+	
 	/*
 	 * global event scheduling classes
 	 * 
@@ -505,11 +511,19 @@ public class EventHandler {
 	 */
 	class CountdownTask extends TimerTask {
 		public void run() {
-			System.out.println("countdown Time's up!");
-			System.out.println("Game starts now!");
-			globalEventStatus = 2;
-			timer.schedule(new FallingCoinStartTask(),
-					beforeFallingCoinsDurations * 1000);
+			currentCountdownTime -= 1;
+			System.out.println("countdown Time: " + currentCountdownTime);
+			
+			if( currentCountdownTime == 0){
+				System.out.println("countdown Time's up!");
+				System.out.println("Game starts now!");
+				globalEventStatus = 2;
+				timer.schedule(new FallingCoinStartTask(),
+						beforeFallingCoinsDurations * 1000);
+			}
+			else { 	
+				timer.schedule(new CountdownTask(), 1000);
+			}
 		}
 	}
 
@@ -537,8 +551,18 @@ public class EventHandler {
 			System.out.println("END OF GAME!");
 			globalEventStatus = 5;
 			timer.cancel();
-			// System.exit(0); //Stops the AWT thread (and everything else)
+//			timer.schedule(new EndofGameTask2(),
+//					fallingCoinsDurations * 1000);
 		}
 	}
+	
+//	class EndofGameTask2 extends TimerTask {
+//		public void run() {
+//			System.out.println("END OF GAME6!");
+//			globalEventStatus = 6;
+//			timer.cancel();
+//			// System.exit(0); //Stops the AWT thread (and everything else)
+//		}
+//	}
 
 }

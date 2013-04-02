@@ -26,7 +26,13 @@ public class GameClient {
 	final int addKeyCodeEvent = 5;
 	final int endOfGameEvent = 6;
 
-	final int timeOutDuration = 500;
+	// Various event durations (seconds)
+	int countdownDurations = 6;
+	int beforeFallingCoinsDurations = 6;
+	int fallingCoinsDurations = 6;
+	int totalGameDurations = 30;
+	int currentCountdownTime = countdownDurations;
+	
 	Random randomGenerator;
 
 	// Stores when player informations, add player when they connects to the
@@ -56,11 +62,13 @@ public class GameClient {
 	 */
 
 	final int port = 9001;
+	final int timeOutDuration = 500;
 	final String gameServerAddress = "localhost";
 	//final String gameServerAddress = "10.0.2.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
-
+	
+	
 	/* Constructor */
 	public GameClient() throws Exception {
 		randomGenerator = new Random();
@@ -191,6 +199,7 @@ public class GameClient {
 
 		// Update global event
 		globalEventStatus = Integer.parseInt(requestToken.nextToken());
+		currentCountdownTime =  Integer.parseInt(requestToken.nextToken());
 	}
 
 	/* Game Server's openTreasureEvent reply format: NoChest, NoKey or Successful */
@@ -420,6 +429,10 @@ public class GameClient {
 	/* Returns the global event status of the game */
 	public int getGlobalEventStatus() {
 		return globalEventStatus;
+	}
+	
+	public int getcurrentCountdownTime(){
+		return currentCountdownTime;
 	}
 
 	/* Closes the UDP socket */

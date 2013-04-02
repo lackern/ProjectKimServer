@@ -25,7 +25,7 @@ import java.awt.Font;
 import javax.swing.JTextField;
 
 public class GameServerGUI {
-
+	
 	private JFrame frame;
 	private GameServer gameServer;
 	private GameServerThread gameServerThread;
@@ -215,7 +215,6 @@ public class GameServerGUI {
 					textFieldPlayerID.setEnabled(true);
 					gameServerThread = new GameServerThread();
 					gameServerThread.start();
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -268,7 +267,7 @@ public class GameServerGUI {
 
 		}
 	}
-
+	
 	// Game Server: feedback to client's requests through UDP connections
 	class GameServer {
 
@@ -295,7 +294,7 @@ public class GameServerGUI {
 
 			// Constantly receiving incoming packets
 			while (true)
-			{		
+			{								
 				JConsole.setText(JConsole.getText() + "\nWaiting for incoming packet from game client... ");
 				DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length); 
 
@@ -341,6 +340,10 @@ public class GameServerGUI {
 
 		String getTreasureInfoString(){	
 			return eventHandler.getTreasureInfoString();
+		}
+		
+		int getGlobalEventStatus(){
+			return eventHandler.getGlobalEventStatus();
 		}
 
 		public void disconnect() throws Exception {
