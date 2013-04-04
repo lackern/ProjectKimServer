@@ -29,6 +29,7 @@ public class GameServerGUI {
 	private JFrame frame;
 	private GameServer gameServer;
 	private GameServerThread gameServerThread;
+	private GameServerRebootThread gameServerRebootThread;
 
 	JButton startButton = new JButton("Start Server");
 	JButton closeButton = new JButton("Close Server");
@@ -73,6 +74,8 @@ public class GameServerGUI {
 	 */
 	public GameServerGUI() throws Exception {
 		initialize();
+		gameServerRebootThread = new GameServerRebootThread();
+		gameServerRebootThread.start();
 	}
 
 	/**
@@ -268,6 +271,25 @@ public class GameServerGUI {
 		}
 	}
 	
+	class GameServerRebootThread extends Thread {
+
+		public void run() {
+			System.out.println("GameServerRebootThread running");
+			while(true){
+				try {
+				if(gameServer.getGlobalEventStatus() == 6){
+					System.out.println("Reboot thread: closing gameserver");
+					closeButton.doClick();
+					System.out.println("Reboot thread: starting gameserver");
+					startButton.doClick();
+				}
+				} catch (Exception e) {
+					//e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	// Game Server: feedback to client's requests through UDP connections
 	class GameServer {
 
@@ -348,10 +370,7 @@ public class GameServerGUI {
 
 		public void disconnect() throws Exception {
 			JConsole.setText(JConsole.getText() + "\nClosing server\nPress Start to continue...");
-			//socket.disconnect();
-
 			socket.close();
-			//connectThread.destroy();
 		}
 
 	}

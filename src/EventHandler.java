@@ -38,6 +38,7 @@ public class EventHandler {
 	int fallingCoinsDurations = 6;
 	int totalGameDurations = 30;
 	int currentCountdownTime = countdownDurations;
+	int rebootDurations = 5;
 
 	Random randomGenerator;
 
@@ -61,6 +62,7 @@ public class EventHandler {
 	// 3 = falling coins starts
 	// 4 = falling coins ends
 	// 5 = game end
+	// 6 = server rebooting
 	private int globalEventStatus;
 	Timer timer;
 
@@ -72,7 +74,7 @@ public class EventHandler {
 	// private TinyOsLoader tinyOsLoader;
 
 	// Constructor
-	public EventHandler() {
+	public EventHandler() throws IOException {
 
 		// TinyOS
 		// tinyOsLoader = new TinyOsLoader(P_NUM);
@@ -85,12 +87,7 @@ public class EventHandler {
 		globalEventStatus = 0;
 		timer = new Timer();
 
-		try {
-			loadKeyCodeList();
-		} catch (NumberFormatException | IOException e) {
-			System.out.println(e);
-			e.printStackTrace();
-		}
+		loadKeyCodeList();
 
 		// For testing purpose when TinyOS is not in use.
 		initializePlayerLocation();
@@ -228,7 +225,7 @@ public class EventHandler {
 		.println("KeyCode info randomly generated ...[EventHandler.java]");
 	}
 
-	private void loadKeyCodeList() throws NumberFormatException, IOException {
+	 void loadKeyCodeList() throws IOException    {
 
 		loadedKeyCodeList = new int[K_NUM];
 		keyCodeLocationPairingList = new int[K_NUM][P_NUM + 1];
@@ -239,8 +236,7 @@ public class EventHandler {
 			}
 		}
 
-		BufferedReader in = new BufferedReader(new FileReader(
-				"src/keyCodeList.txt"));
+		BufferedReader in = new BufferedReader(new FileReader("src/keyCodeList.txt"));
 		StringTokenizer stringToken;
 
 		for (int i = 0; i < K_NUM; i++) {
@@ -466,7 +462,7 @@ public class EventHandler {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
 			if(i < 10)
-			keyCodeString += loadedKeyCodeList[i] + "[0"	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
+				keyCodeString += loadedKeyCodeList[i] + "[0"	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 			else keyCodeString += loadedKeyCodeList[i] + "["	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 
 			if ((i + 1) % 10 == 0)
@@ -501,7 +497,7 @@ public class EventHandler {
 	int getGlobalEventStatus(){
 		return globalEventStatus;
 	}
-	
+
 	/*
 	 * global event scheduling classes
 	 * 
@@ -513,7 +509,7 @@ public class EventHandler {
 		public void run() {
 			currentCountdownTime -= 1;
 			System.out.println("countdown Time: " + currentCountdownTime);
-			
+
 			if( currentCountdownTime == 0){
 				System.out.println("countdown Time's up!");
 				System.out.println("Game starts now!");
@@ -550,19 +546,18 @@ public class EventHandler {
 		public void run() {
 			System.out.println("END OF GAME!");
 			globalEventStatus = 5;
-			timer.cancel();
-//			timer.schedule(new EndofGameTask2(),
-//					fallingCoinsDurations * 1000);
+			timer.schedule(new GameServerRebootTask(),
+					rebootDurations * 1000);
 		}
 	}
-	
-//	class EndofGameTask2 extends TimerTask {
-//		public void run() {
-//			System.out.println("END OF GAME6!");
-//			globalEventStatus = 6;
-//			timer.cancel();
-//			// System.exit(0); //Stops the AWT thread (and everything else)
-//		}
-//	}
+
+	class GameServerRebootTask extends TimerTask {
+		public void run() {
+			System.out.println("Rebooting gameserver!");
+			globalEventStatus = 6;
+			timer.cancel();
+			// System.exit(0); //Stops the AWT thread (and everything else)
+		}
+	}
 
 }
