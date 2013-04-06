@@ -25,7 +25,10 @@ import java.awt.Font;
 import javax.swing.JTextField;
 
 public class GameServerGUI {
-	
+
+	private long startTime = System.currentTimeMillis();
+	private boolean serverIsOn = false;
+
 	private JFrame frame;
 	private GameServer gameServer;
 	private GameServerThread gameServerThread;
@@ -90,7 +93,7 @@ public class GameServerGUI {
 
 		JScrollPane JConsoleScrollPane = new JScrollPane();
 		JConsoleScrollPane.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Console", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		JConsoleScrollPane.setBounds(10, 253, 429, 305);
+		JConsoleScrollPane.setBounds(10, 288, 429, 270);
 
 		DefaultCaret caret = (DefaultCaret)JConsole.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -103,7 +106,7 @@ public class GameServerGUI {
 		JConsole.setEditable(false);
 		JConsole.setText("Press Start to continue...");
 		panelTreasureList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelTreasureList.setBounds(10, 132, 170, 100);
+		panelTreasureList.setBounds(10, 122, 233, 155);
 
 		frame.getContentPane().add(panelTreasureList);
 		panelTreasureList.setLayout(new BorderLayout(0, 0));
@@ -111,9 +114,9 @@ public class GameServerGUI {
 		panelTreasureList.add(JTreasure, BorderLayout.CENTER);
 		JTreasure.setEditable(false);
 		JTreasure.setMargin(new Insets(5, 5, 5, 5));
-		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest");
+		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest\nX: Out of Bound");
 		panelPlayerInfo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelPlayerInfo.setBounds(200, 132, 384, 100);
+		panelPlayerInfo.setBounds(253, 122, 331, 100);
 
 		frame.getContentPane().add(panelPlayerInfo);
 		panelPlayerInfo.setLayout(new BorderLayout(0, 0));
@@ -123,7 +126,7 @@ public class GameServerGUI {
 		JPlayer.setEditable(false);		
 		JPlayer.setMargin(new Insets(5, 5, 5, 5));
 		JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
-				+"Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
+				+"Player 0:   logon: ?  Score: ?  keys: ?  Location: ?\n");
 		panelControls.setBackground(Color.LIGHT_GRAY);
 		panelControls.setBorder(new TitledBorder(null, "Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelControls.setBounds(449, 253, 135, 305);
@@ -184,7 +187,7 @@ public class GameServerGUI {
 		textFieldPlayerID.setBounds(52, 130, 30, 30);
 		panelControls.add(textFieldPlayerID);
 		textFieldPlayerID.setColumns(10);
-		
+
 		JTextArea JControlHelp = new JTextArea();
 		JControlHelp.setMargin(new Insets(2, 5, 2, 5));
 		JControlHelp.setEditable(false);
@@ -192,29 +195,29 @@ public class GameServerGUI {
 		JControlHelp.setBounds(10, 212, 115, 82);
 		panelControls.add(JControlHelp);
 		scrollPanelKeyCodePairingList.setBounds(10, 11, 574, 100);
-		
+
 		frame.getContentPane().add(scrollPanelKeyCodePairingList);
-						scrollPanelKeyCodePairingList.setViewportView(JKeyCode);
-						JKeyCode.setLineWrap(true);
-						JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-						JKeyCode.setEditable(false);
-						JKeyCode.setMargin(new Insets(5, 5, 5, 5));
-						
-								JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
-										+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
-										+"Each KeyCode can only be use once by each player");
+		scrollPanelKeyCodePairingList.setViewportView(JKeyCode);
+		JKeyCode.setLineWrap(true);
+		JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		JKeyCode.setEditable(false);
+		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
+
+		JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+				+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
+				+"Each KeyCode can only be use once by each player");
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					startButton.setEnabled(false);
-					closeButton.setEnabled(true);
-					btnMoveUp.setEnabled(true);
-					btnMoveDown.setEnabled(true);
-					btnMoveLeft.setEnabled(true);
-					btnMoveRight.setEnabled(true);
-					textFieldPlayerID.setEnabled(true);
-					gameServerThread = new GameServerThread();
-					gameServerThread.start();
+				try {serverIsOn=true;
+				startButton.setEnabled(false);
+				closeButton.setEnabled(true);
+				btnMoveUp.setEnabled(true);
+				btnMoveDown.setEnabled(true);
+				btnMoveLeft.setEnabled(true);
+				btnMoveRight.setEnabled(true);
+				textFieldPlayerID.setEnabled(true);
+				gameServerThread = new GameServerThread();
+				gameServerThread.start();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -222,22 +225,22 @@ public class GameServerGUI {
 		});
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					//connectThread.stop();
-					startButton.setEnabled(true);
-					closeButton.setEnabled(false);
-					btnMoveUp.setEnabled(false);
-					btnMoveDown.setEnabled(false);
-					btnMoveLeft.setEnabled(false);
-					btnMoveRight.setEnabled(false);
-					textFieldPlayerID.setEnabled(false);
-					JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
-							+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
-							+"Each KeyCode can only be use once by each player");
-					JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest");
-					JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
-							+"Player 0:   logon: ?  Score: ?  keysHeld: ?  Location: ?\n");
-					gameServer.disconnect();
+				try {serverIsOn = false;
+				//connectThread.stop();
+				startButton.setEnabled(true);
+				closeButton.setEnabled(false);
+				btnMoveUp.setEnabled(false);
+				btnMoveDown.setEnabled(false);
+				btnMoveLeft.setEnabled(false);
+				btnMoveRight.setEnabled(false);
+				textFieldPlayerID.setEnabled(false);
+				JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+						+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
+						+"Each KeyCode can only be use once by each player");
+				JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest\nX: Out of Bound");
+				JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
+						+"Player 0:   logon: ?  Score: ?  keys: ?  Location: ?\n");
+				gameServer.disconnect();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -267,26 +270,33 @@ public class GameServerGUI {
 
 		}
 	}
-	
+
 	class GameServerRebootThread extends Thread {
 
 		public void run() {
 			System.out.println("GameServerRebootThread running");
 			while(true){
-				try {
-				if(gameServer.getGlobalEventStatus() == 6){
-					System.out.println("Reboot thread: closing gameserver");
-					closeButton.doClick();
-					System.out.println("Reboot thread: starting gameserver");
-					startButton.doClick();
-				}
-				} catch (Exception e) {
-					//e.printStackTrace();
+				if (System.currentTimeMillis() - startTime > 500 && serverIsOn){
+					try {
+						startTime = System.currentTimeMillis();
+						JPlayer.setText(gameServer.getPlayerInfoString());
+						JKeyCode.setText(gameServer.getKeyCodeInfoString());
+						JTreasure.setText(gameServer.getTreasureInfoString());
+
+						if(gameServer.getGlobalEventStatus() == 6){
+							System.out.println("Reboot thread: closing gameserver");
+							closeButton.doClick();
+							System.out.println("Reboot thread: starting gameserver");
+							startButton.doClick();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 	}
-	
+
 	// Game Server: feedback to client's requests through UDP connections
 	class GameServer {
 
@@ -301,10 +311,10 @@ public class GameServerGUI {
 			/* *** Initialization *** */
 			String reply = ""; // stores the reply info
 			eventHandler = new EventHandler();
-
-			JPlayer.setText(eventHandler.getPlayerInfoString());
-			JKeyCode.setText(eventHandler.getKeyCodeString());
-			JTreasure.setText(eventHandler.getTreasureInfoString());
+			//
+			//			JPlayer.setText(eventHandler.getPlayerInfoString());
+			//			JKeyCode.setText(eventHandler.getKeyCodeInfoString());
+			//			JTreasure.setText(eventHandler.getTreasureInfoString());
 
 			//use DatagramSocket for UDP connection
 			//@SuppressWarnings("resource")
@@ -341,18 +351,20 @@ public class GameServerGUI {
 				socket.send(outPacket);
 				System.out.println("Sent reply: " + reply + " [GamerServer.java]");
 				JConsole.setText(JConsole.getText() + "\nSent reply: " + reply);
-				JPlayer.setText(eventHandler.getPlayerInfoString());
-				JTreasure.setText(eventHandler.getTreasureInfoString());
+				//				JPlayer.setText(eventHandler.getPlayerInfoString());
+				//				JTreasure.setText(eventHandler.getTreasureInfoString());
 			}
 
 		}
 
 		public void movePlayer(int playerID, int direction) {
 			eventHandler.movePlayer(playerID, direction);
-			JPlayer.setText(eventHandler.getPlayerInfoString());
-
+			//JPlayer.setText(eventHandler.getPlayerInfoString());
 		}
 
+		public String getKeyCodeInfoString() {
+			return eventHandler.getKeyCodeInfoString();
+		}
 		String getPlayerInfoString(){	
 			return eventHandler.getPlayerInfoString();
 		}
@@ -360,7 +372,7 @@ public class GameServerGUI {
 		String getTreasureInfoString(){	
 			return eventHandler.getTreasureInfoString();
 		}
-		
+
 		int getGlobalEventStatus(){
 			return eventHandler.getGlobalEventStatus();
 		}

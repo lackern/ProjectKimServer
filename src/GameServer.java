@@ -8,23 +8,23 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class GameServer {
-	
+
 	private static EventHandler eventHandler;
 	private static DatagramSocket socket ;
-	
+
 	public static void main(String[] args) throws Exception {
 
 		System.out.println("Game Server starting up... [GamerServer.java]");
-		
+
 		/* *** Initialization *** */
 		String reply = ""; // stores the reply info
 		eventHandler = new EventHandler();
 
 		//use DatagramSocket for UDP connection
 		//@SuppressWarnings("resource")
-		 socket = new DatagramSocket(9001);
+		socket = new DatagramSocket(9001);
 		byte[] incomingBuffer = new byte[1000];
-		
+
 		// Constantly receiving incoming packets
 		while (true)
 		{	
@@ -37,11 +37,11 @@ public class GameServer {
 
 			/* ----------------------------------------------------- */
 			// pass client request to event handler to compute results
-			
+
 			reply = eventHandler.computeEventsReply(request);
-			
+
 			/* ----------------------------------------------------- */
-			
+
 			// convert reply into array of bytes (output buffer)
 			byte[] outputBuffer = new byte[1000];
 			outputBuffer = reply.getBytes();

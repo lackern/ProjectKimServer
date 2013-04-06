@@ -34,7 +34,7 @@ public class GameClient {
 	int currentPreGameTime = totalcountdownDurations;
 	int currentInGameTime = totalGameDurations;
 	int rebootDurations = 5;
-	
+
 	Random randomGenerator;
 
 	// Stores when player informations, add player when they connects to the
@@ -66,12 +66,12 @@ public class GameClient {
 
 	final int port = 9001;
 	final int timeOutDuration = 500;
-	final String gameServerAddress = "192.168.1.217";
+	final String gameServerAddress = "localhost";
 	//final String gameServerAddress = "10.0.2.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
-	
-	
+
+
 	/* Constructor */
 	public GameClient() throws Exception {
 		randomGenerator = new Random();
@@ -147,7 +147,7 @@ public class GameClient {
 		return reply;
 	}
 
-	
+
 	/* Primary event to be called by android game client at a fixed interval */
 	/*
 	 * Return player's game info upon request p1 logon status, p1 score, p1
@@ -439,15 +439,25 @@ public class GameClient {
 	public int getGlobalEventStatus() {
 		return globalEventStatus;
 	}
-	
+
 	/* Returns the current pre-game time of the game */
 	public int getCurrentPreGameTime(){
 		return currentPreGameTime;
 	}
-	
+
 	/* Returns the current  in game time of the game */
 	public int getCurrentInGameTime(){
 		return currentInGameTime;
+	}
+
+	/* Returns the number of players that are currently logon to the game */
+	public int getNumPlayerLogon(){
+		int counter = 0;
+		for(int i = 0; i < P_NUM; i++){
+			counter += playerList[i][0];
+		}
+
+		return counter;
 	}
 
 	/* Closes the UDP socket */

@@ -23,9 +23,9 @@ public class EventHandler {
 	final int P_NUM = 4; // Number of players
 	final int K_NUM = N_NUM; // Number of key codes
 	final int MAX_KEYCODE_PER_ROOM = 2; // Use by KeyCode generator
-	
+
 	final int[] BOUNDARY_LIST = {28, 29, 42, 43, 56, 57, 70, 71, 84, 85, 86, 87, 96, 97}; 
-	
+
 	// Event code
 	final int invalidEvent = 0;
 	final int loginEvent = 1;
@@ -54,13 +54,13 @@ public class EventHandler {
 	private int[] treasureList; // stores treasure location
 	private int[] generatedkeyCodeList; // stores the generated key codes
 	private int[] loadedKeyCodeList; // stores the key codes
-	
+
 	// stores the pairing information and number of times the key code have been used by each player
 	// [][0-3] store the number of time used by player 0-3
 	// [][4] stores the location that the keyCode is placed at
 	private int[][] keyCodeLocationPairingList; 
 
-	
+
 	// globalEvent code: Stores the current global game status
 	// 0 = pre-game
 	// 1 = countdown once the first player logon to the server
@@ -175,11 +175,11 @@ public class EventHandler {
 		}
 
 		int newLocation = curX * COLUMN + curY;
-		if(withinBoundaryCheck(newLocation))
+		if(checkWithinBoundary(newLocation))
 			playerLocation[playerID] = newLocation;
 	}
 
-	private boolean withinBoundaryCheck(int location){
+	private boolean checkWithinBoundary(int location){
 		boolean result = true;
 		for(int i = 0; i < BOUNDARY_LIST.length; i++ ){
 			if (location == BOUNDARY_LIST[i]){
@@ -187,7 +187,7 @@ public class EventHandler {
 				break;
 			}
 		}
-				
+
 		return result;		
 	}
 	private void initializeTreasureList() {
@@ -200,7 +200,7 @@ public class EventHandler {
 		int counter = 0;
 		while (counter < T_NUM) {
 			int i = randomGenerator.nextInt(N_NUM);
-			if (treasureList[i] == 0 && withinBoundaryCheck(i)) {
+			if (treasureList[i] == 0 && checkWithinBoundary(i)) {
 				treasureList[i] = 1;
 				counter++;
 			}
@@ -229,7 +229,7 @@ public class EventHandler {
 		for (int i = 0; i < P_NUM; i++)
 			System.out.println("Player " + i + ": " + " logon: "
 					+ playerList[i][0] + " Score: " + playerList[i][1]
-							+ " keysHeld: " + playerList[i][2]);
+							+ " keys: " + playerList[i][2]);
 
 		System.out.println("Player info initiatised ...[EventHandler.java]");
 	}
@@ -256,7 +256,7 @@ public class EventHandler {
 		System.out.println(KeyCodeCounter + " KeyCode info randomly generated ...[EventHandler.java]");
 	}
 
-	 void loadKeyCodeList() throws IOException    {
+	void loadKeyCodeList() throws IOException    {
 
 		loadedKeyCodeList = new int[K_NUM];
 		keyCodeLocationPairingList = new int[K_NUM][P_NUM + 1];
@@ -279,7 +279,7 @@ public class EventHandler {
 		}
 
 		in.close();
-		System.out.print(getKeyCodeString());
+		System.out.print(getKeyCodeInfoString());
 		System.out.println("KeyCode info loaded ...[EventHandler.java]");
 
 	}
@@ -458,7 +458,7 @@ public class EventHandler {
 	}
 
 	/* Returns a string for GUI display */
-	String getKeyCodeString() {
+	String getKeyCodeInfoString() {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
 			if(keyCodeLocationPairingList[i][P_NUM] < 10)
@@ -475,20 +475,20 @@ public class EventHandler {
 	String getPlayerInfoString() {
 		String playerInfoString = "";
 		for (int i = 0; i < P_NUM; i++) {
-			
+
 			//tinyOS
 
 			/*playerInfoString += "Player " + i + " : " + "  logon: " 
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
-							+ "  keysHeld: " + playerList[i][2] + "  Location: "
+							+ "  keys: " + playerList[i][2] + "  Location: "
 							+ tinyOsLoader.getPlayerLocation(i) + "\n";
-							*/
+			 */
 			// no tinyOS
 			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
-							+ "  keysHeld: " + playerList[i][2] + "  Location: "
+							+ "  keys: " + playerList[i][2] + "  Location: "
 							+ playerLocation[i] + "\n";
-			
+
 		}
 		return playerInfoString;
 	}
@@ -497,7 +497,11 @@ public class EventHandler {
 	String getTreasureInfoString() {
 		String getTreasureInfoString = "";
 		for (int i = 0; i < N_NUM; i++) {
+			
+			if (checkWithinBoundary(i))
 			getTreasureInfoString += treasureList[i] + "   ";
+			else getTreasureInfoString += "X   ";
+				
 			if ((i + 1) % COLUMN == 0)
 				getTreasureInfoString += "\n";
 		}
@@ -571,7 +575,7 @@ public class EventHandler {
 				timer.schedule(new EndofGameTask(), 1000);
 			}
 		}
-		
+
 	}
 
 	class GameServerRebootTask extends TimerTask {

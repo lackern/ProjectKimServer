@@ -23,7 +23,7 @@ public class GameClientSimulator {
 
 		/* Login test */
 		//System.out.println(client.loginEvent(99));
-		//System.out.println(client.loginEvent(0));
+		System.out.println(client.loginEvent(0));
 //		System.out.println(client.loginEvent(0));
 //
 		/* add key event test */
@@ -49,12 +49,12 @@ public class GameClientSimulator {
 		/* ************************ */
 		/* periodic mapUpdate tests */
 		/* ************************ */
-//		while(true){
-//			client.mapUpdateEvent(0);
-//			Thread.sleep(500);
-//			System.out.println("client pre-game: " + client.getCurrentPreGameTime());
-//			System.out.println("client in-game: " + client.getCurrentInGameTime());
-//		}
+		while(true){
+			client.mapUpdateEvent(0);
+			Thread.sleep(500);
+			System.out.println("client pre-game: " + client.getCurrentPreGameTime());
+			System.out.println("client in-game: " + client.getCurrentInGameTime());
+		}
 
 	}
 }
