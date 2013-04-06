@@ -33,11 +33,12 @@ public class EventHandler {
 	final int endOfGameEvent = 6;
 
 	// Various event durations (seconds)
-	int countdownDurations = 6;
-	int beforeFallingCoinsDurations = 6;
-	int fallingCoinsDurations = 6;
-	int totalGameDurations = 30;
-	int currentCountdownTime = countdownDurations;
+	int totalcountdownDurations = 10;
+	int beforeFallingCoinsDurations = 10;
+	int fallingCoinsDurations = 10;
+	int totalGameDurations = 60;
+	int currentPreGameTime = totalcountdownDurations;
+	int currentInGameTime = totalGameDurations;
 	int rebootDurations = 5;
 
 	Random randomGenerator;
@@ -283,8 +284,7 @@ public class EventHandler {
 			System.out.println("First player logon, \nCountdown starts now");
 			globalEventStatus = 1;
 			timer.schedule(new CountdownTask(), 1000);
-			System.out.println("countdown Time: " + currentCountdownTime);
-			timer.schedule(new EndofGameTask(), totalGameDurations * 1000);
+			System.out.println("countdown Time: " + currentPreGameTime);
 		}
 
 		return reply;
@@ -292,7 +292,7 @@ public class EventHandler {
 
 	/*
 	 * Return player's game info upon request p1 logon status, p1 score, p1
-	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus
+	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, preGameCountdownTime, inGameCountdownTime
 	 */
 	private String mapUpdateEvent(int playerID) {
 
@@ -353,7 +353,7 @@ public class EventHandler {
 			t_reply += ";";
 		}
 
-		g_reply = globalEventStatus + ";" + currentCountdownTime + ";";
+		g_reply = globalEventStatus + ";" + currentPreGameTime + ";" + currentInGameTime + ";";
 
 		reply = l_reply + t_reply + g_reply;
 
@@ -507,13 +507,15 @@ public class EventHandler {
 	 */
 	class CountdownTask extends TimerTask {
 		public void run() {
-			currentCountdownTime -= 1;
-			System.out.println("countdown Time: " + currentCountdownTime);
+			currentPreGameTime -= 1;
+			System.out.println("Pre-game countdown Time: " + currentPreGameTime);
 
-			if( currentCountdownTime == 0){
-				System.out.println("countdown Time's up!");
+			if( currentPreGameTime == 0){
+				System.out.println("Pre-game countdown Time's up!");
 				System.out.println("Game starts now!");
 				globalEventStatus = 2;
+				System.out.println("In-gamecountdown time: " + currentInGameTime);
+				timer.schedule(new EndofGameTask(), 1000);
 				timer.schedule(new FallingCoinStartTask(),
 						beforeFallingCoinsDurations * 1000);
 			}
@@ -542,13 +544,24 @@ public class EventHandler {
 	}
 
 	/* End of whole game */
-	class EndofGameTask extends TimerTask {
+	class EndofGameTask extends TimerTask {		
 		public void run() {
-			System.out.println("END OF GAME!");
-			globalEventStatus = 5;
-			timer.schedule(new GameServerRebootTask(),
-					rebootDurations * 1000);
+			currentInGameTime -= 1;
+			System.out.println("In-gamecountdown time: " + currentInGameTime);
+
+			if( currentInGameTime == 0){
+				System.out.println("In-game countdown Time's up!");
+				System.out.println("End of game!");
+				System.out.println("Rebooting GameServerGui in 5 seconds!");
+				globalEventStatus = 5;
+				timer.schedule(new GameServerRebootTask(),
+						rebootDurations * 1000);
+			}
+			else { 	
+				timer.schedule(new EndofGameTask(), 1000);
+			}
 		}
+		
 	}
 
 	class GameServerRebootTask extends TimerTask {

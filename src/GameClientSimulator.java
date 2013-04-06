@@ -49,11 +49,11 @@ public class GameClientSimulator {
 		/* ************************ */
 		/* periodic mapUpdate tests */
 		/* ************************ */
-		while(true){
-			client.mapUpdateEvent(0);
-			Thread.sleep(500);
-			System.out.println("clientCD: " + client.getcurrentCountdownTime());
-		}
+//		while(true){
+//			client.mapUpdateEvent(0);
+//			Thread.sleep(500);
+//			System.out.println("clientCD: " + client.getcurrentCountdownTime());
+//		}
 
 	}
 }
