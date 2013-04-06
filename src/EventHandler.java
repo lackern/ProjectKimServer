@@ -22,7 +22,10 @@ public class EventHandler {
 	final int T_NUM = N_NUM / 3; // Number of treasures on the map
 	final int P_NUM = 4; // Number of players
 	final int K_NUM = N_NUM; // Number of key codes
-
+	final int MAX_KEYCODE_PER_ROOM = 2; // Use by KeyCode generator
+	
+	final int[] BOUNDARY_LIST = {28, 29, 42, 43, 56, 57, 70, 71, 84, 85, 86, 87, 96, 97}; 
+	
 	// Event code
 	final int invalidEvent = 0;
 	final int loginEvent = 1;
@@ -51,11 +54,13 @@ public class EventHandler {
 	private int[] treasureList; // stores treasure location
 	private int[] generatedkeyCodeList; // stores the generated key codes
 	private int[] loadedKeyCodeList; // stores the key codes
-	private int[][] keyCodeLocationPairingList; // stores the pairing
-	// information and number of
-	// times the key code have been
-	// used
+	
+	// stores the pairing information and number of times the key code have been used by each player
+	// [][0-3] store the number of time used by player 0-3
+	// [][4] stores the location that the keyCode is placed at
+	private int[][] keyCodeLocationPairingList; 
 
+	
 	// globalEvent code: Stores the current global game status
 	// 0 = pre-game
 	// 1 = countdown once the first player logon to the server
@@ -169,9 +174,22 @@ public class EventHandler {
 			curY += newMove[newDirection][1];
 		}
 
-		playerLocation[playerID] = curX * COLUMN + curY;
+		int newLocation = curX * COLUMN + curY;
+		if(withinBoundaryCheck(newLocation))
+			playerLocation[playerID] = newLocation;
 	}
 
+	private boolean withinBoundaryCheck(int location){
+		boolean result = true;
+		for(int i = 0; i < BOUNDARY_LIST.length; i++ ){
+			if (location == BOUNDARY_LIST[i]){
+				result = false;
+				break;
+			}
+		}
+				
+		return result;		
+	}
 	private void initializeTreasureList() {
 		treasureList = new int[N_NUM];
 
@@ -182,7 +200,7 @@ public class EventHandler {
 		int counter = 0;
 		while (counter < T_NUM) {
 			int i = randomGenerator.nextInt(N_NUM);
-			if (treasureList[i] == 0) {
+			if (treasureList[i] == 0 && withinBoundaryCheck(i)) {
 				treasureList[i] = 1;
 				counter++;
 			}
@@ -217,13 +235,25 @@ public class EventHandler {
 	}
 
 	private void generateRandomKeyCodeList() {
-		generatedkeyCodeList = new int[K_NUM];
-		for (int i = 0; i < K_NUM; i++) {
-			generatedkeyCodeList[i] = randomGenerator.nextInt(9000) + 1000;
-			System.out.println(generatedkeyCodeList[i] + ";" + i + ";");
+		generatedkeyCodeList = new int[N_NUM * MAX_KEYCODE_PER_ROOM];
+
+		int KeyCodeCounter = 0;
+		for (int i = 0; i < N_NUM; i++) {
+			int counter = randomGenerator.nextInt(3);
+			if(counter == 2){
+				generatedkeyCodeList[KeyCodeCounter] = randomGenerator.nextInt(9000) + 1000;
+				System.out.println(generatedkeyCodeList[KeyCodeCounter] + ";" + i + ";");
+				generatedkeyCodeList[KeyCodeCounter+1] = randomGenerator.nextInt(9000) + 1000;
+				System.out.println(generatedkeyCodeList[KeyCodeCounter+1] + ";" + i + ";");
+			}
+			else if (counter == 1){
+				generatedkeyCodeList[KeyCodeCounter] = randomGenerator.nextInt(9000) + 1000;
+				System.out.println(generatedkeyCodeList[KeyCodeCounter] + ";" + i + ";");
+			}
+
+			KeyCodeCounter += counter;
 		}
-		System.out
-		.println("KeyCode info randomly generated ...[EventHandler.java]");
+		System.out.println(KeyCodeCounter + " KeyCode info randomly generated ...[EventHandler.java]");
 	}
 
 	 void loadKeyCodeList() throws IOException    {
@@ -310,40 +340,11 @@ public class EventHandler {
 		 * l_reply += tinyOsLoader.getPlayerLocation(i) + ";"; }
 		 */
 
-		int[][] newMove = new int[4][2];
-		newMove[0][0] = 0;
-		newMove[0][1] = -1;
-		newMove[1][0] = 0;
-		newMove[1][1] = 1;
-		newMove[2][0] = -1;
-		newMove[2][1] = 0;
-		newMove[3][0] = 1;
-		newMove[3][1] = 0;
-
 		// random player location for testing without tinyos
 		for (int i = 0; i < P_NUM; i++) {
 			l_reply += playerList[i][0] + ";";
 			l_reply += playerList[i][1] + ";";
 			l_reply += playerList[i][2] + ";";
-
-			int curX = playerLocation[i] / COLUMN;
-			int curY = playerLocation[i] % COLUMN;
-
-			while (true) {
-				int newDirection = randomGenerator.nextInt(4);
-
-				if (!(curX + newMove[newDirection][0] < 0
-						|| curX + newMove[newDirection][0] >= ROW
-						|| curY + newMove[newDirection][1] < 0 || curY
-						+ newMove[newDirection][1] >= COLUMN)) {
-					curX += newMove[newDirection][0];
-					curY += newMove[newDirection][1];
-					break;
-				}
-
-			}
-
-			// playerLocation[i] = curX * COLUMN + curY;
 			l_reply += playerLocation[i] + ";";
 		}
 
@@ -461,7 +462,7 @@ public class EventHandler {
 	String getKeyCodeString() {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
-			if(i < 10)
+			if(keyCodeLocationPairingList[i][P_NUM] < 10)
 				keyCodeString += loadedKeyCodeList[i] + "[0"	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 			else keyCodeString += loadedKeyCodeList[i] + "["	+ keyCodeLocationPairingList[i][P_NUM] + "]  ";
 

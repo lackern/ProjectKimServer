@@ -440,11 +440,13 @@ public class GameClient {
 		return globalEventStatus;
 	}
 	
+	/* Returns the current pre-game time of the game */
 	public int getCurrentPreGameTime(){
 		return currentPreGameTime;
 	}
 	
-	public int getcurrentCountdownTime(){
+	/* Returns the current  in game time of the game */
+	public int getCurrentInGameTime(){
 		return currentInGameTime;
 	}
 

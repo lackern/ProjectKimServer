@@ -39,8 +39,6 @@ public class GameServerGUI {
 	JTextArea JPlayer = new JTextArea();
 	JTextArea JTreasure = new JTextArea();
 	JTextArea JControlHelp = new JTextArea();
-
-	JPanel panelKeyCodePairingList = new JPanel();
 	JPanel panelTreasureList = new JPanel();
 	JPanel panelPlayerInfo = new JPanel();
 	JPanel panelControls = new JPanel();
@@ -50,6 +48,7 @@ public class GameServerGUI {
 	JButton btnMoveLeft = new JButton("<");
 	JButton btnMoveRight = new JButton(">");
 	private JTextField textFieldPlayerID;
+	private final JScrollPane scrollPanelKeyCodePairingList = new JScrollPane();
 
 	/**
 	 * Launch the application.
@@ -103,20 +102,6 @@ public class GameServerGUI {
 		JConsole.setRows(5);
 		JConsole.setEditable(false);
 		JConsole.setText("Press Start to continue...");
-		panelKeyCodePairingList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelKeyCodePairingList.setBounds(10, 11, 574, 100);
-
-		frame.getContentPane().add(panelKeyCodePairingList);
-		panelKeyCodePairingList.setLayout(new BorderLayout(0, 0));
-		JKeyCode.setLineWrap(true);
-		JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		JKeyCode.setEditable(false);
-		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
-
-		JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
-				+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
-				+"Each KeyCode can only be use once by each player");
-		panelKeyCodePairingList.add(JKeyCode, BorderLayout.CENTER);
 		panelTreasureList.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panelTreasureList.setBounds(10, 132, 170, 100);
 
@@ -206,6 +191,18 @@ public class GameServerGUI {
 		JControlHelp.setText("Remote controls:\r\nEnter playerID\r\nPress the buttons \r\nto move around ");
 		JControlHelp.setBounds(10, 212, 115, 82);
 		panelControls.add(JControlHelp);
+		scrollPanelKeyCodePairingList.setBounds(10, 11, 574, 100);
+		
+		frame.getContentPane().add(scrollPanelKeyCodePairingList);
+						scrollPanelKeyCodePairingList.setViewportView(JKeyCode);
+						JKeyCode.setLineWrap(true);
+						JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+						JKeyCode.setEditable(false);
+						JKeyCode.setMargin(new Insets(5, 5, 5, 5));
+						
+								JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+										+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
+										+"Each KeyCode can only be use once by each player");
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
