@@ -340,7 +340,6 @@ public class EventHandler {
 		 * l_reply += tinyOsLoader.getPlayerLocation(i) + ";"; }
 		 */
 
-		// random player location for testing without tinyos
 		for (int i = 0; i < P_NUM; i++) {
 			l_reply += playerList[i][0] + ";";
 			l_reply += playerList[i][1] + ";";
@@ -369,7 +368,7 @@ public class EventHandler {
 		String reply = "";
 
 		// tinyos
-		// if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1)
+		// if(treasureList[tinyOsLoader.getPlayerLocation(playerID)]==1){
 
 		// no tinyos
 		if (treasureList[playerLocation] == 1) {
@@ -384,8 +383,7 @@ public class EventHandler {
 					if (treasureList[i] == 0) {
 						treasureList[i] = 1;
 						// tinyOS
-						// treasureList[tinyOsLoader.getPlayerLocation(playerID)]
-						// = 0;
+						// treasureList[tinyOsLoader.getPlayerLocation(playerID)] = 0;
 
 						// no TinyOs
 						treasureList[playerLocation] = 0;
@@ -425,8 +423,9 @@ public class EventHandler {
 
 		for (int i = 0; i < K_NUM; i++) {
 			if (loadedKeyCodeList[i] == keyCode) { // KeyCode found
-				//TinyOS tinyOsLoader.getPlayerLocation(playerID);
-				//if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
+				//TinyOS 
+				//if(tinyOsLoader.getPlayerLocation(playerID) == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
+				//No tinyOS
 				if(playerLocation[playerID] == keyCodeLocationPairingList[i][P_NUM]){ // player at the right location
 					if(keyCodeLocationPairingList[i][playerID] == 0){// KeyCode not used before
 						keyCodeLocationPairingList[i][playerID] = 1;
@@ -476,10 +475,20 @@ public class EventHandler {
 	String getPlayerInfoString() {
 		String playerInfoString = "";
 		for (int i = 0; i < P_NUM; i++) {
+			
+			//tinyOS
+
+			/*playerInfoString += "Player " + i + " : " + "  logon: " 
+					+ playerList[i][0] + "  Score: " + playerList[i][1]
+							+ "  keysHeld: " + playerList[i][2] + "  Location: "
+							+ tinyOsLoader.getPlayerLocation(i) + "\n";
+							*/
+			// no tinyOS
 			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
 							+ "  keysHeld: " + playerList[i][2] + "  Location: "
 							+ playerLocation[i] + "\n";
+			
 		}
 		return playerInfoString;
 	}

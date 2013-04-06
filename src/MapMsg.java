@@ -217,51 +217,6 @@ public class MapMsg extends net.tinyos.message.Message {
         setUIntBEElement(offsetBits_player_id(), 16, value);
     }
 
-    public static void main(String[] args) throws Exception {
-	
-		System.out.println("Game Server starting up... [GamerServer.java]");
-		
-		/* *** Initialization *** */
-		String reply = ""; // stores the reply info
-		EventHandler events = new EventHandler();
-	
-		//use DatagramSocket for UDP connection
-		@SuppressWarnings("resource")
-		DatagramSocket socket = new DatagramSocket(9001);
-		byte[] incomingBuffer = new byte[1000];
-	
-		// Constantly receiving incoming packets
-		while (true)
-		{
-			DatagramPacket incomingPacket = new DatagramPacket(incomingBuffer, incomingBuffer.length); 
-	
-			socket.receive(incomingPacket);
-	
-			// convert content of packet into a string 
-			String request = new String(incomingPacket.getData(), 0, incomingPacket.getLength() );
-	
-			/* ----------------------------------------------------- */
-			// pass client request to event handler to compute results
-			
-			reply = events.computeEventsReply(request);
-			
-			/* ----------------------------------------------------- */
-			
-			// convert reply into array of bytes (output buffer)
-			byte[] outputBuffer = new byte[1000];
-			outputBuffer = reply.getBytes();
-	
-			// create reply packet using output buffer.
-			// Note: destination address/port is retrieved from incomingPacket
-			DatagramPacket outPacket = new DatagramPacket(outputBuffer, outputBuffer.length, incomingPacket.getAddress(), incomingPacket.getPort());
-	
-			// finally, send the packet
-			socket.send(outPacket);
-			System.out.println("Sent reply: " + reply + " [GamerServer.java]");
-		}
-	
-	}
-
 	/**
      * Return the size, in bytes, of the field 'player_id'
      */
