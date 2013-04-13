@@ -11,6 +11,9 @@ public class TinyOsLoader implements MessageListener
 	private int P_NUM;		// Number of players
 
 	private int[] locationList;
+	
+	//test
+	private int testLoc = 0;
 
 	private MoteIF mote;
 
@@ -85,13 +88,18 @@ public class TinyOsLoader implements MessageListener
 
 				System.out.println("Player: " + i);
 				for(int j =0; j<queueList.get(i).size(); j++ ){
-					System.out.println(queueList.get(i).get(j));
+					//System.out.println(queueList.get(i).get(j));
 
 				}
 			}
 			
 			checkGrid(mmsg.get_player_id());
-			System.out.println(locationList[1]);
+			//System.out.println(locationList[1]);
+			if (locationList[1] != testLoc)
+			{
+				testLoc = locationList[1];
+				System.out.println("testLoc : " + testLoc);
+			}
 
 			//System.out.println("location_id: " + mmsg.get_location_id() + "[TinyOsLoader.java]");
 			//System.out.println("player_id: " + mmsg.get_player_id()+ "[TinyOsLoader.java]");
