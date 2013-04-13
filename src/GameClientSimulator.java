@@ -49,12 +49,12 @@ public class GameClientSimulator {
 		/* ************************ */
 		/* periodic mapUpdate tests */
 		/* ************************ */
-		while(true){
-			client.mapUpdateEvent(0);
-			Thread.sleep(500);
-			System.out.println("client pre-game: " + client.getCurrentPreGameTime());
-			System.out.println("client in-game: " + client.getCurrentInGameTime());
-		}
+//		while(true){
+//			client.mapUpdateEvent(0);
+//			Thread.sleep(500);
+//			System.out.println("client pre-game: " + client.getCurrentPreGameTime());
+//			System.out.println("client in-game: " + client.getCurrentInGameTime());
+//		}
 
 	}
 }

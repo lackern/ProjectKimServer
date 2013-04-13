@@ -37,11 +37,12 @@ public class EventHandler {
 
 	// Various event durations (seconds)
 	int totalcountdownDurations = 10;
-	int beforeFallingCoinsDurations = 10;
-	int fallingCoinsDurations = 10;
+	int beforeMiniGameDurations = 10;
+	int totalMiniGameDurations = 10;
 	int totalGameDurations = 60;
 	int currentPreGameTime = totalcountdownDurations;
 	int currentInGameTime = totalGameDurations;
+	int currentMiniGameTime = totalMiniGameDurations;
 	int rebootDurations = 5;
 
 	Random randomGenerator;
@@ -65,8 +66,8 @@ public class EventHandler {
 	// 0 = pre-game
 	// 1 = countdown once the first player logon to the server
 	// 2 = game starts
-	// 3 = falling coins starts
-	// 4 = falling coins ends
+	// 3 = mini game starts
+	// 4 = mini game ends
 	// 5 = game end
 	// 6 = server rebooting
 	private int globalEventStatus;
@@ -322,7 +323,7 @@ public class EventHandler {
 
 	/*
 	 * Return player's game info upon request p1 logon status, p1 score, p1
-	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, preGameCountdownTime, inGameCountdownTime
+	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, currentPreGameTime, currentInGameTime, currentMiniGameTime
 	 */
 	private String mapUpdateEvent(int playerID) {
 
@@ -353,7 +354,7 @@ public class EventHandler {
 			t_reply += ";";
 		}
 
-		g_reply = globalEventStatus + ";" + currentPreGameTime + ";" + currentInGameTime + ";";
+		g_reply = globalEventStatus + ";" + currentPreGameTime + ";" + currentInGameTime + ";" + currentMiniGameTime +";";
 
 		reply = l_reply + t_reply + g_reply;
 
@@ -529,9 +530,11 @@ public class EventHandler {
 				System.out.println("Game starts now!");
 				globalEventStatus = 2;
 				System.out.println("In-gamecountdown time: " + currentInGameTime);
+				
+				System.out.println("Mini game starts now");
 				timer.schedule(new EndofGameTask(), 1000);
-				timer.schedule(new FallingCoinStartTask(),
-						beforeFallingCoinsDurations * 1000);
+				timer.schedule(new miniGameCountdownTask(),
+						beforeMiniGameDurations * 1000);
 			}
 			else { 	
 				timer.schedule(new CountdownTask(), 1000);
@@ -539,22 +542,24 @@ public class EventHandler {
 		}
 	}
 
-	/* Start of falling coin event */
-	class FallingCoinStartTask extends TimerTask {
+	/* Start of mini game event */
+	class miniGameCountdownTask extends TimerTask {
+		
 		public void run() {
-			System.out.println("Falling Coins starts now!");
 			globalEventStatus = 3;
-			timer.schedule(new FallingCoinEndTask(),
-					fallingCoinsDurations * 1000);
-		}
-	}
+			currentMiniGameTime -= 1;
+			System.out.println("currentMiniGameTime: " + currentMiniGameTime);
 
-	/* End of falling coin event, back to normal treasure hunting */
-	class FallingCoinEndTask extends TimerTask {
-		public void run() {
-			System.out.println("Falling Coins ends now!");
-			globalEventStatus = 4;
+			if(currentMiniGameTime == 0){
+				System.out.println("currentMiniGameTime Time's up!");
+				System.out.println("Schduling mini game ends now!");
+				globalEventStatus = 4;
+			}
+			else { 	
+				timer.schedule(new miniGameCountdownTask(), 1000);
+			}
 		}
+		
 	}
 
 	/* End of whole game */

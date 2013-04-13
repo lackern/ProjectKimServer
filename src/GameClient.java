@@ -28,11 +28,12 @@ public class GameClient {
 
 	// Various event durations (seconds)
 	int totalcountdownDurations = 10;
-	int beforeFallingCoinsDurations = 10;
-	int fallingCoinsDurations = 10;
+	int beforeMiniGameDurations = 10;
+	int totalMiniGameDurations = 10;
 	int totalGameDurations = 60;
 	int currentPreGameTime = totalcountdownDurations;
 	int currentInGameTime = totalGameDurations;
+	int currentMiniGameTime = totalMiniGameDurations;
 	int rebootDurations = 5;
 
 	Random randomGenerator;
@@ -151,7 +152,7 @@ public class GameClient {
 	/* Primary event to be called by android game client at a fixed interval */
 	/*
 	 * Return player's game info upon request p1 logon status, p1 score, p1
-	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, preGameCountdownTime, inGameCountdownTime
+	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, currentPreGameTime, currentInGameTime, currentMiniGameTime
 	 */
 	public void mapUpdateEvent(int playerID) throws Exception {
 
@@ -209,6 +210,7 @@ public class GameClient {
 		globalEventStatus = Integer.parseInt(requestToken.nextToken());
 		currentPreGameTime = Integer.parseInt(requestToken.nextToken());
 		currentInGameTime = Integer.parseInt(requestToken.nextToken());
+		currentMiniGameTime = Integer.parseInt(requestToken.nextToken());
 	}
 
 	/* Game Server's openTreasureEvent reply format: NoChest, NoKey or Successful */
@@ -449,7 +451,12 @@ public class GameClient {
 	public int getCurrentInGameTime(){
 		return currentInGameTime;
 	}
-
+	
+	/* Returns the current  mini game time of the game */
+	public int getCurrentMiniGameTime(){
+		return currentMiniGameTime;
+	}
+	
 	/* Returns the number of players that are currently logon to the game */
 	public int getNumPlayerLogon(){
 		int counter = 0;
