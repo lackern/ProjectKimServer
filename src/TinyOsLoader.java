@@ -11,41 +11,36 @@ public class TinyOsLoader implements MessageListener
 	private int P_NUM;		// Number of players
 
 	private int[] locationList;
-	
-	//test
-	private int testLoc = 0;
 
 	private MoteIF mote;
 
 	//private LinkedList<Integer> queue;
 	private ArrayList<LinkedList<Integer>> queueList;
 	private final int[][] GRID = {
-			{93,94,92,107},
-			{100,98,88,107},
-			{109,108,97,98},
-			
-			{94,89,87,92},
-			{88,97,91,92},
-			{110,108,99,97},
-			
-			{112,104,89,87},
-			{89,90,101,91},
-			{101,110,91,99}};  
-	// 63: 
-	// not 63
-	
-//	 {
-//			{93,94,0,107},
-//			{100,98,88,0},
-//			{109,108,0,0},
-//			
-//			{0,89,87,0},
-//			{88,97,91,0},
-//			{110,108,99,0},
-//			
-//			{112,104,0,0},
-//			{89,90,101,0},
-//			{101,110,0,0}}; 
+			{93,94},
+			{100,88},
+			{109,108},
+
+			{87,0},
+			{91,0},
+			{99,0},
+
+			{112,0},
+			{90,0},
+			{101,0}};  
+
+	//	 {
+	//			{93,94,0,107},
+	//			{100,98,88,0},
+	//			{109,108,0,0},
+	//			
+	//			{0,89,87,0},
+	//			{88,97,91,0},
+	//			{110,108,99,0},
+	//			
+	//			{112,104,0,0},
+	//			{89,90,101,0},
+	//			{101,110,0,0}}; 
 
 	// Constructor
 	public TinyOsLoader(int p_input) {
@@ -55,9 +50,9 @@ public class TinyOsLoader implements MessageListener
 		for(int i = 0; i< P_NUM; i++){
 			queueList.add(new LinkedList<Integer>());
 			queueList.get(i).add(0);
-			queueList.get(i).add(0);
-			queueList.get(i).add(0);
-			queueList.get(i).add(0);
+			//queueList.get(i).add(0);
+			//queueList.get(i).add(0);
+			//queueList.get(i).add(0);
 		}
 
 		locationList = new int[P_NUM];
@@ -80,26 +75,21 @@ public class TinyOsLoader implements MessageListener
 
 			// Print message.
 			//locationList[mmsg.get_player_id()] = mmsg.get_location_id();
-			
+
 			addNewElement(mmsg.get_location_id(),mmsg.get_player_id());
 
 			// Print
 			for(int i =0; i<P_NUM; i++ ){
 
-				System.out.println("Player: " + i);
+				//System.out.println("Player: " + i);
 				for(int j =0; j<queueList.get(i).size(); j++ ){
 					//System.out.println(queueList.get(i).get(j));
 
 				}
 			}
-			
+
 			checkGrid(mmsg.get_player_id());
-			//System.out.println(locationList[1]);
-			if (locationList[1] != testLoc)
-			{
-				testLoc = locationList[1];
-				System.out.println("testLoc : " + testLoc);
-			}
+			System.out.println(locationList[1]);
 
 			//System.out.println("location_id: " + mmsg.get_location_id() + "[TinyOsLoader.java]");
 			//System.out.println("player_id: " + mmsg.get_player_id()+ "[TinyOsLoader.java]");
@@ -108,24 +98,28 @@ public class TinyOsLoader implements MessageListener
 
 	public void checkGrid(int playerNum){
 		boolean isSubsetOfQueue;
-		
+
 		for(int i = 0; i <GRID.length; i++){
-			isSubsetOfQueue = true;
+			//isSubsetOfQueue = true;
 			for(int j = 0; j <GRID[i].length; j++){
-				
+
 				if(GRID[i][j]>0)
-					if(!isInQueue(GRID[i][j], playerNum))
-						isSubsetOfQueue = false;
+					if(isInQueue(GRID[i][j], playerNum))
+						locationList[playerNum] = i/3 * 14 + 34 + i%3;
+				
+//					if(!isInQueue(GRID[i][j], playerNum))
+////						isSubsetOfQueue = false;
 			}
-			if (isSubsetOfQueue)
-				locationList[playerNum] = i/3 * 14 + 34 + i%3;
+//			if (isSubsetOfQueue)
+//				locationList[playerNum] = i/3 * 14 + 34 + i%3;
 		}
 	}
 
 	public void addNewElement(int newElement,int playerNum) {
 		if(!isInQueue(newElement, playerNum)){
-			queueList.get(playerNum).removeFirst();
-			queueList.get(playerNum).add(newElement);
+			//queueList.get(playerNum).removeFirst();
+			//queueList.get(playerNum).add(newElement);
+			queueList.get(playerNum).set(0, newElement);
 		}	
 	}
 
@@ -136,7 +130,7 @@ public class TinyOsLoader implements MessageListener
 	}
 
 	public int getPlayerLocation(int playerID) {
-		
+
 		return locationList[playerID];
 	}
 

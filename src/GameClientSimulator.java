@@ -45,16 +45,17 @@ public class GameClientSimulator {
 		/* get ranking test test */
 		System.out.println(client.getGlobalEventStatus());
 		
-		
 		/* ************************ */
 		/* periodic mapUpdate tests */
 		/* ************************ */
-//		while(true){
-//			client.mapUpdateEvent(0);
-//			Thread.sleep(500);
-//			System.out.println("client pre-game: " + client.getCurrentPreGameTime());
-//			System.out.println("client in-game: " + client.getCurrentInGameTime());
-//		}
+		while(true){
+			client.mapUpdateEvent(0);
+			Thread.sleep(500);
+			//System.out.println("client pre-game: " + client.getCurrentPreGameTime());
+			//System.out.println("client in-game: " + client.getCurrentInGameTime());
+			System.out.println("client mini-game: " + client.getCurrentMiniGameTime());
+			
+		}
 
 	}
 }
