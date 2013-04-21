@@ -1,17 +1,20 @@
-<class-diagram version="1.0.10" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
-  associations="true" dependencies="true" nesting-relationships="true">  
-  <class id="1" corner="BOTTOM_RIGHT" language="java" name="GameClient" project="ProjectKimServer" 
-    file="/ProjectKimServer/src/GameClient.java" binary="false">    
-    <position height="-1" width="-1" x="123" y="364"/>    
-    <display autosize="true" stereotype="true" package="false" initial-value="true" signature="true" visibility="true">      
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.1" icons="true" automaticImage="PNG" always-add-relationships="true" generalizations="true" 
+  realizations="true" associations="true" dependencies="true" nesting-relationships="true">  
+  <class id="1" language="java" name="GameClient" project="ProjectKimServer" 
+    file="/ProjectKimServer/src/GameClient.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="162" y="383"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
       <attributes public="true" package="true" protected="true" private="true"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="2" corner="BOTTOM_RIGHT" language="java" name="ClientTest" project="ProjectKimServer" 
-    file="/ProjectKimServer/src/ClientTest.java" binary="false">    
-    <position height="-1" width="-1" x="415" y="364"/>    
-    <display autosize="true" stereotype="true" package="false" initial-value="true" signature="true" visibility="true">      
+  <class id="2" language="java" name="GameClientSimulator" project="ProjectKimServer" 
+    file="/ProjectKimServer/src/GameClientSimulator.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="460" y="-130"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
       <attributes public="true" package="true" protected="true" private="true"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
@@ -25,7 +28,7 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="false" initial-value="true" signature="true" 
-    visibility="true">    
+    accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true"/>    
     <operations public="true" package="true" protected="true" private="true"/>  
   </classifier-display>  

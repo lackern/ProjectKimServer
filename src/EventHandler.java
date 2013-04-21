@@ -36,14 +36,14 @@ public class EventHandler {
 	final int endOfGameEvent = 6;
 
 	// Various event durations (seconds)
-	int totalcountdownDurations = 10;
-	int beforeMiniGameDurations = 10;
-	int totalMiniGameDurations = 10;
-	int totalGameDurations = 60;
-	int currentPreGameTime = totalcountdownDurations;
-	int currentInGameTime = totalGameDurations;
-	int currentMiniGameTime = totalMiniGameDurations;
-	int rebootDurations = 5;
+	private int totalcountdownDurations = 10;
+	private int beforeMiniGameDurations = 15;
+	private int totalMiniGameDurations = 30;
+	private int totalGameDurations = 150;
+	private int currentPreGameTime = totalcountdownDurations;
+	private int currentInGameTime = totalGameDurations;
+	private int currentMiniGameTime = totalMiniGameDurations;
+	private int rebootDurations = 5;
 
 	Random randomGenerator;
 
@@ -74,8 +74,8 @@ public class EventHandler {
 	Timer timer;
 
 	// for testing purpose
-	boolean generateNewKeyCodeList = false;
-	private static int[] playerLocation;
+	private boolean generateNewKeyCodeList = false;
+	private int[] playerLocation;
 
 	// TinyOS
 	// private TinyOsLoader tinyOsLoader;
@@ -590,6 +590,10 @@ public class EventHandler {
 			timer.cancel();
 			// System.exit(0); //Stops the AWT thread (and everything else)
 		}
+	}
+	
+	void stopGameTimer(){
+		timer.cancel();
 	}
 
 }

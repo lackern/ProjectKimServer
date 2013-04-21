@@ -379,6 +379,7 @@ public class GameServerGUI {
 
 		public void disconnect() throws Exception {
 			JConsole.setText(JConsole.getText() + "\nClosing server\nPress Start to continue...");
+			eventHandler.stopGameTimer();
 			socket.close();
 		}
 

@@ -17,30 +17,30 @@ public class TinyOsLoader implements MessageListener
 	//private LinkedList<Integer> queue;
 	private ArrayList<LinkedList<Integer>> queueList;
 	private final int[][] GRID = {
-			{93,94},
-			{100,88},
-			{109,108},
+			{93,94,107},
+			{100,97},
+			{109,98,0},
+			
 
-			{87,0},
-			{91,0},
-			{99,0},
+			{91,92,0},
+			{88,87,0},
+			{99,108,0},
 
-			{112,0},
-			{90,0},
-			{101,0}};  
+			{112,104,0},
+			{90,89,0},
+			{101,110,0}};
 
-	//	 {
-	//			{93,94,0,107},
-	//			{100,98,88,0},
-	//			{109,108,0,0},
-	//			
-	//			{0,89,87,0},
-	//			{88,97,91,0},
-	//			{110,108,99,0},
-	//			
-	//			{112,104,0,0},
-	//			{89,90,101,0},
-	//			{101,110,0,0}}; 
+//			{93,94,0,107},
+//			{100,98,88,0},
+//			{109,108,97,0},
+//			
+//			{0,89,87,0},
+//			{88,97,91,0},
+//			{110,108,99,0},
+//			
+//			{112,104,0,0},
+//			{89,90,101,0},
+//			{101,110,0,0}};
 
 	// Constructor
 	public TinyOsLoader(int p_input) {
@@ -50,9 +50,6 @@ public class TinyOsLoader implements MessageListener
 		for(int i = 0; i< P_NUM; i++){
 			queueList.add(new LinkedList<Integer>());
 			queueList.get(i).add(0);
-			//queueList.get(i).add(0);
-			//queueList.get(i).add(0);
-			//queueList.get(i).add(0);
 		}
 
 		locationList = new int[P_NUM];
@@ -79,20 +76,23 @@ public class TinyOsLoader implements MessageListener
 			addNewElement(mmsg.get_location_id(),mmsg.get_player_id());
 
 			// Print
-			for(int i =0; i<P_NUM; i++ ){
+			//for(int i =0; i<P_NUM; i++ ){
 
 				//System.out.println("Player: " + i);
-				for(int j =0; j<queueList.get(i).size(); j++ ){
+				//System.out.println("queue:");
+				//for(int j =0; j<queueList.get(i).size(); j++ ){
+				//for(int j =0; j<queueList.get(1).size(); j++ ){
 					//System.out.println(queueList.get(i).get(j));
+					//System.out.println(queueList.get(1).get(j));
 
-				}
-			}
+				//}
+			//}
 
 			checkGrid(mmsg.get_player_id());
-			System.out.println(locationList[1]);
+			//System.out.println(locationList[1]);
 
-			//System.out.println("location_id: " + mmsg.get_location_id() + "[TinyOsLoader.java]");
-			//System.out.println("player_id: " + mmsg.get_player_id()+ "[TinyOsLoader.java]");
+			System.out.println("location_id: " + mmsg.get_location_id() + " [TinyOsLoader.java]");
+			//System.out.println("player_id: " + mmsg.get_player_id()+ " [TinyOsLoader.java]");
 		}
 	}
 
@@ -120,7 +120,7 @@ public class TinyOsLoader implements MessageListener
 			//queueList.get(playerNum).removeFirst();
 			//queueList.get(playerNum).add(newElement);
 			queueList.get(playerNum).set(0, newElement);
-		}	
+		}
 	}
 
 	public boolean isInQueue(int newElement, int playerNum) {
@@ -130,7 +130,6 @@ public class TinyOsLoader implements MessageListener
 	}
 
 	public int getPlayerLocation(int playerID) {
-
 		return locationList[playerID];
 	}
 
