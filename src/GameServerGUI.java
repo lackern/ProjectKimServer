@@ -8,8 +8,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+
 import javax.swing.JTextArea;
 import java.awt.Insets;
 import java.awt.Color;
@@ -23,6 +26,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import java.awt.Font;
 import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
 
 public class GameServerGUI {
 
@@ -31,14 +35,18 @@ public class GameServerGUI {
 
 	private JFrame frame;
 	private GameServer gameServer;
+	private GameServerCasting gameServerCasting;
 	private GameServerThread gameServerThread;
+	private GameServerCastingThread gameServerCastingThread;
 	private GameServerRebootThread gameServerRebootThread;
 
 	JButton startButton = new JButton("Start Server");
 	JButton closeButton = new JButton("Close Server");
 
 	JTextArea JConsole = new JTextArea();
-	JTextArea JKeyCode = new JTextArea();
+	JTextArea JKeyCode1 = new JTextArea();
+	JTextArea JKeyCode2 = new JTextArea();
+	JTextArea JKeyCode3 = new JTextArea();
 	JTextArea JPlayer = new JTextArea();
 	JTextArea JTreasure = new JTextArea();
 	JTextArea JControlHelp = new JTextArea();
@@ -51,7 +59,7 @@ public class GameServerGUI {
 	JButton btnMoveLeft = new JButton("<");
 	JButton btnMoveRight = new JButton(">");
 	private JTextField textFieldPlayerID;
-	private final JScrollPane scrollPanelKeyCodePairingList = new JScrollPane();
+	
 
 	/**
 	 * Launch the application.
@@ -76,6 +84,8 @@ public class GameServerGUI {
 	 */
 	public GameServerGUI() throws Exception {
 		initialize();
+		gameServerCastingThread = new GameServerCastingThread();
+		gameServerCastingThread.start();
 		gameServerRebootThread = new GameServerRebootThread();
 		gameServerRebootThread.start();
 	}
@@ -194,18 +204,36 @@ public class GameServerGUI {
 		JControlHelp.setText("Remote controls:\r\nEnter playerID\r\nPress the buttons \r\nto move around ");
 		JControlHelp.setBounds(10, 212, 115, 82);
 		panelControls.add(JControlHelp);
-		scrollPanelKeyCodePairingList.setBounds(10, 11, 574, 100);
 
-		frame.getContentPane().add(scrollPanelKeyCodePairingList);
-		scrollPanelKeyCodePairingList.setViewportView(JKeyCode);
-		JKeyCode.setLineWrap(true);
-		JKeyCode.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		JKeyCode.setEditable(false);
-		JKeyCode.setMargin(new Insets(5, 5, 5, 5));
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(10, 11, 574, 100);
+		frame.getContentPane().add(tabbedPane);
+		tabbedPane.addTab("0-28", null, JKeyCode1, null);
+		JKeyCode1.setLineWrap(true);
+		JKeyCode1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		JKeyCode1.setEditable(false);
+		JKeyCode1.setMargin(new Insets(5, 5, 5, 5));
 
-		JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+		JKeyCode1.setText("Displays all KeyCodes paired with their respective Node\n"
 				+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
 				+"Each KeyCode can only be use once by each player");
+		JKeyCode2.setText("Displays all KeyCodes paired with their respective Node\nKeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\nEach KeyCode can only be use once by each player");
+		JKeyCode2.setMargin(new Insets(5, 5, 5, 5));
+		JKeyCode2.setLineWrap(true);
+		JKeyCode2.setEditable(false);
+		JKeyCode2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		tabbedPane.addTab("New tab", null, JKeyCode2, null);
+		JKeyCode3.setText("Displays all KeyCodes paired with their respective Node\nKeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\nEach KeyCode can only be use once by each player");
+		JKeyCode3.setMargin(new Insets(5, 5, 5, 5));
+		JKeyCode3.setLineWrap(true);
+		JKeyCode3.setEditable(false);
+		JKeyCode3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Key Code pairing list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		tabbedPane.addTab("New tab", null, JKeyCode3, null);
+		
+
+
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {serverIsOn=true;
@@ -234,7 +262,7 @@ public class GameServerGUI {
 				btnMoveLeft.setEnabled(false);
 				btnMoveRight.setEnabled(false);
 				textFieldPlayerID.setEnabled(false);
-				JKeyCode.setText("Displays all KeyCodes paired with their respective Node\n"
+				JKeyCode1.setText("Displays all KeyCodes paired with their respective Node\n"
 						+ "KeyCode: 1234    Node: 16\nKeyCode pair: 1234[16]\n"
 						+"Each KeyCode can only be use once by each player");
 				JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest\nX: Out of Bound");
@@ -271,6 +299,21 @@ public class GameServerGUI {
 		}
 	}
 
+	class GameServerCastingThread extends Thread {
+
+		public void run() {
+			System.out.println("Game initiatised!");
+			try {
+				gameServerCasting = new GameServerCasting();
+				gameServerCasting.startCasting();
+			} catch (Exception e) {
+				// 
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	class GameServerRebootThread extends Thread {
 
 		public void run() {
@@ -280,7 +323,9 @@ public class GameServerGUI {
 					try {
 						startTime = System.currentTimeMillis();
 						JPlayer.setText(gameServer.getPlayerInfoString());
-						JKeyCode.setText(gameServer.getKeyCodeInfoString());
+						JKeyCode1.setText(gameServer.getKeyCodeInfoString().substring(0,302));
+						JKeyCode2.setText(gameServer.getKeyCodeInfoString().substring(303,605));
+						JKeyCode3.setText(gameServer.getKeyCodeInfoString().substring(606, 908));
 						JTreasure.setText(gameServer.getTreasureInfoString());
 
 						if(gameServer.getGlobalEventStatus() == 6){
@@ -383,5 +428,42 @@ public class GameServerGUI {
 			socket.close();
 		}
 
+	}
+
+	// multicast testing
+	class GameServerCasting {
+
+		private static final long FIVE_SECONDS = 0;
+
+		public void startCasting() throws Exception 
+		{
+			DatagramSocket socket = new DatagramSocket();
+			boolean moreQuotes = true;
+
+			while (moreQuotes) {
+				try {
+					// don't wait for request...just send a quote
+					String dString = "realipaddresstest";
+					byte[] buf = new byte[256];
+
+					buf = dString.getBytes();
+					InetAddress group = InetAddress.getByName("234.235.236.237");
+
+					DatagramPacket packet;
+					packet = new DatagramPacket(buf, buf.length, group, 8000);
+					socket.send(packet);
+					//System.out.println("mc testing");
+					try {
+						Thread.sleep((long)Math.random() * FIVE_SECONDS);
+					} 
+					catch (InterruptedException e) { }
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+					moreQuotes = false;
+				}
+			}
+			socket.close();
+		}
 	}
 }

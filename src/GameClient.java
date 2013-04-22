@@ -5,6 +5,7 @@
  */
 
 import java.util.*;
+import java.io.IOException;
 import java.net.*;
 
 public class GameClient {
@@ -14,7 +15,7 @@ public class GameClient {
 
 	final int N_NUM = ROW * COLUMN; // Total number of Nodes
 	final int T_NUM = N_NUM / 3; // Number of treasures on the map
-	final int P_NUM = 4; // Number of players
+	final int P_NUM = 5; // Number of players
 	final int K_NUM = N_NUM; // Number of key codes
 
 	// Event code
@@ -65,7 +66,8 @@ public class GameClient {
 
 	final int port = 9001;
 	final int timeOutDuration = 500;
-	final String gameServerAddress = "localhost";
+	//final String gameServerAddress = "localhost";
+	final String gameServerAddress = "1.1.1.1";
 	//final String gameServerAddress = "10.0.2.2";
 	private DatagramSocket socket;
 	InetAddress inetAddress;
@@ -88,6 +90,26 @@ public class GameClient {
 		socket.setSoTimeout(timeOutDuration);
 		inetAddress = InetAddress.getByName(gameServerAddress);
 	}
+
+	public void getGameServerIP() throws IOException{
+		// Receive port 8000
+		MulticastSocket mSocket = new MulticastSocket(8000);
+		InetAddress groupAddress = InetAddress.getByName("234.235.236.237");
+		mSocket.joinGroup(groupAddress);
+
+		DatagramPacket packet;
+		byte[] buf = new byte[256];
+		packet = new DatagramPacket(buf, buf.length);
+		mSocket.receive(packet);
+
+		inetAddress = packet.getAddress();
+		System.out.println("packet rc: " + new String(packet.getData()));
+		System.out.println("packet rc: " + inetAddress);
+		
+		mSocket.leaveGroup(groupAddress);
+		mSocket.close();
+	}
+
 
 	private void initializeTreasureList() {
 		treasureList = new int[N_NUM];
@@ -112,7 +134,7 @@ public class GameClient {
 
 	/* Game Server's loginEvent reply format: Failure or Successful or AlreadyLogon */
 	public String loginEvent(int playerID) throws Exception {
-
+		getGameServerIP();
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -153,7 +175,7 @@ public class GameClient {
 	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, currentPreGameTime, currentInGameTime, currentMiniGameTime
 	 */
 	public void mapUpdateEvent(int playerID) throws Exception {
-
+		getGameServerIP();
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -213,7 +235,7 @@ public class GameClient {
 
 	/* Game Server's openTreasureEvent reply format: NoChest, NoKey or Successful */
 	public String openTreasureEvent(int playerID) throws Exception {
-
+		getGameServerIP();
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -250,7 +272,7 @@ public class GameClient {
 
 	/* Game Server's scoreUpdateEvent reply format: Failure or Successful */
 	public String scoreUpdateEvent(int playerID, int newScore) throws Exception {
-
+		getGameServerIP();
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -286,7 +308,7 @@ public class GameClient {
 
 	/* Game Server's addKeyCodeEvent reply format: InvalidKeyCode, InvalidLocation, KeyCodeUsed, Successful */
 	public String addKeyCodeEvent(int playerID, int keyCode) throws Exception {
-
+		getGameServerIP();
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -449,12 +471,12 @@ public class GameClient {
 	public int getCurrentInGameTime(){
 		return currentInGameTime;
 	}
-	
+
 	/* Returns the current  mini game time of the game */
 	public int getCurrentMiniGameTime(){
 		return currentMiniGameTime;
 	}
-	
+
 	/* Returns the number of players that are currently logon to the game */
 	public int getNumPlayerLogon(){
 		int counter = 0;
@@ -463,6 +485,18 @@ public class GameClient {
 		}
 
 		return counter;
+	}
+
+	/* Returns the total number of players supported by the game server */
+	public int getTotalNumOfPlayersSupported(){
+		return P_NUM-1;
+	}
+	
+	/* Returns boolean if a player is currently logon to the game */
+	public boolean checkPlayerLogonStatus(int playerID){
+		if(playerList[playerID][0] == 1)
+			return true;
+		else return false;
 	}
 
 	/* Closes the UDP socket */

@@ -20,7 +20,7 @@ public class EventHandler {
 
 	final int N_NUM = ROW * COLUMN; // Total number of Nodes
 	final int T_NUM = N_NUM / 3; // Number of treasures on the map
-	final int P_NUM = 4; // Number of players
+	final int P_NUM = 5; // Number of players
 	final int K_NUM = N_NUM; // Number of key codes
 	final int MAX_KEYCODE_PER_ROOM = 2; // Use by KeyCode generator
 

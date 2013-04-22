@@ -13,7 +13,7 @@ public class GameClientSimulator {
 	public static void main(String[] args) throws Exception {
 
 		client = new GameClient();
-
+		
 		/* ******************* */
 		/* UDP Network related */
 		/* ******************* */
@@ -48,14 +48,14 @@ public class GameClientSimulator {
 		/* ************************ */
 		/* periodic mapUpdate tests */
 		/* ************************ */
-//		while(true){
-//			client.mapUpdateEvent(0);
-//			Thread.sleep(500);
-//			//System.out.println("client pre-game: " + client.getCurrentPreGameTime());
-//			//System.out.println("client in-game: " + client.getCurrentInGameTime());
-//			System.out.println("client mini-game: " + client.getCurrentMiniGameTime());
-//			
-//		}
+		while(true){
+			client.mapUpdateEvent(0);
+			Thread.sleep(500);
+			//System.out.println("client pre-game: " + client.getCurrentPreGameTime());
+			//System.out.println("client in-game: " + client.getCurrentInGameTime());
+			System.out.println("client mini-game: " + client.getCurrentMiniGameTime());
+			
+		}
 
 	}
 }
