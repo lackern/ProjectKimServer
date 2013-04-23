@@ -97,8 +97,8 @@ public class GameServerGUI {
 	 */
 	private void initialize() {
 		frame = new JFrame("Project Kim Server");
-		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
 		frame.setResizable(false);
+		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -128,7 +128,7 @@ public class GameServerGUI {
 		JTreasure.setMargin(new Insets(5, 5, 5, 5));
 		JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest\nX: Out of Bound");
 		panelPlayerInfo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelPlayerInfo.setBounds(253, 124, 331, 95);
+		panelPlayerInfo.setBounds(253, 124, 331, 100);
 
 		frame.getContentPane().add(panelPlayerInfo);
 		panelPlayerInfo.setLayout(new BorderLayout(0, 0));
@@ -234,7 +234,7 @@ public class GameServerGUI {
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Game Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(253, 230, 331, 100);
+		panel.setBounds(253, 235, 331, 100);
 		frame.getContentPane().add(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		panel.add(JTimerInfo, BorderLayout.NORTH);
@@ -281,7 +281,7 @@ public class GameServerGUI {
 					JTreasure.setText("Displays treasure chests\nlocated at each Node\n0: no treasure chest\n1: has treasure chest\nX: Out of Bound");
 					JPlayer.setText("Display infomation of all players in the game\n" +"Example:\n"
 							+"Player 1:   logon: ?  Score: ?  keys: ?  Location: ?\n");
-					
+
 					JTimerInfo.setText("Displays current game status\r\ncurrentPreGameTime =\r\ncurrentInGameTime =\r\ncurrentMiniGameTime =");
 					gameServer.disconnect();
 				} catch (Exception e1) {
@@ -413,7 +413,7 @@ public class GameServerGUI {
 				// finally, send the packet
 				socket.send(outPacket);
 				System.out.println("Sent reply: " + reply + " [GamerServer.java]");
-				JConsole.setText(JConsole.getText() + "\nSent reply: " + reply);
+				JConsole.setText(JConsole.getText() + "\n" + eventHandler.getReplyInfoString());
 			}
 
 		}
@@ -467,7 +467,7 @@ public class GameServerGUI {
 					byte[] buf = new byte[256];
 
 					buf = dString.getBytes();
-					InetAddress group = InetAddress.getByName("172.28.176.255");
+					InetAddress group = InetAddress.getByName("224.0.0.251");
 
 					DatagramPacket packet;
 					packet = new DatagramPacket(buf, buf.length, group, 8000);

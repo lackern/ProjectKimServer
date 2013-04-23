@@ -69,8 +69,8 @@ public class GameClient {
 	//final String gameServerAddress = "localhost";
 	//final String gameServerAddress = "10.0.2.2";
 	final String gameServerAddress = "1.1.1.1";
-	final boolean serverBoardCasting = true;
-	
+	final boolean serverBoardCasting = false;
+
 	private DatagramSocket socket;
 	InetAddress inetAddress;
 
@@ -95,10 +95,10 @@ public class GameClient {
 
 	public void getGameServerIP() throws IOException{
 		if(serverBoardCasting){
-			DatagramSocket mSocket = new DatagramSocket(8000);
+			MulticastSocket mSocket = new MulticastSocket(8000);
 			mSocket.setSoTimeout(timeOutDuration);
-			//InetAddress groupAddress = InetAddress.getByName("172.28.176.255");
-			//mSocket.joinGroup(groupAddress);
+			InetAddress groupAddress = InetAddress.getByName("224.0.0.251");
+			mSocket.joinGroup(groupAddress);
 
 			DatagramPacket packet;
 			byte[] buf = new byte[256];
@@ -110,7 +110,7 @@ public class GameClient {
 			inetAddress = packet.getAddress();
 			System.out.println(new String(packet.getData(), 0, packet.getLength()) +": " + inetAddress.toString());
 
-			//mSocket.leaveGroup(groupAddress);
+			mSocket.leaveGroup(groupAddress);
 			mSocket.close();
 		}
 	}
