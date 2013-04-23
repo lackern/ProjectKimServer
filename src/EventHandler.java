@@ -475,7 +475,7 @@ public class EventHandler {
 	/* Returns a string for GUI display */
 	String getPlayerInfoString() {
 		String playerInfoString = "";
-		for (int i = 0; i < P_NUM; i++) {
+		for (int i = 1; i < P_NUM; i++) {
 
 			//tinyOS
 
@@ -496,17 +496,58 @@ public class EventHandler {
 
 	/* Returns a string for GUI display */
 	String getTreasureInfoString() {
-		String getTreasureInfoString = "";
+		String treasureInfoString = "";
 		for (int i = 0; i < N_NUM; i++) {
-			
+
 			if (checkWithinBoundary(i))
-			getTreasureInfoString += treasureList[i] + "   ";
-			else getTreasureInfoString += "X   ";
-				
+				treasureInfoString += treasureList[i] + "   ";
+			else treasureInfoString += "X   ";
+
 			if ((i + 1) % COLUMN == 0)
-				getTreasureInfoString += "\n";
+				treasureInfoString += "\n";
 		}
-		return getTreasureInfoString;
+		return treasureInfoString;
+	}
+
+	private String convertGameStatus(int gameStatusID){
+		// 0 = pre-game
+		// 1 = countdown once the first player logon to the server
+		// 2 = game starts
+		// 3 = mini game starts
+		// 4 = mini game ends
+		// 5 = game end
+		// 6 = server rebooting
+
+		String gameStatus = "";
+		
+		switch (gameStatusID) {
+		case 0: gameStatus = "Pre-game";
+		break;
+		case 1:  gameStatus = "Pre-game countdown";
+		break;
+		case 2:  gameStatus = "Game started";
+		break;
+		case 3:  gameStatus = "Mini game started";
+		break;
+		case 4:  gameStatus = "mini game ended";
+		break;
+		case 5:  gameStatus = "Game ended";
+		break;
+		case 6:  gameStatus = "Server rebooting";
+		break;
+		default: gameStatus = "Invalid";
+		break;
+		}
+		return gameStatus;
+	}	
+
+	String getGameStatusInfoString() {
+		String timerInfoString = "";
+		timerInfoString += "Game status: " + convertGameStatus(globalEventStatus) + "\n";
+		timerInfoString += "currentPreGameTime = " + currentPreGameTime +" seconds\n";
+		timerInfoString += "currentInGameTime = " + currentInGameTime + " seconds\n";
+		timerInfoString += "currentMiniGameTime = " + currentMiniGameTime + " seconds";
+		return timerInfoString;
 	}
 
 	int getGlobalEventStatus(){
@@ -530,7 +571,7 @@ public class EventHandler {
 				System.out.println("Game starts now!");
 				globalEventStatus = 2;
 				System.out.println("In-gamecountdown time: " + currentInGameTime);
-				
+
 				System.out.println("Mini game starts now");
 				timer.schedule(new EndofGameTask(), 1000);
 				timer.schedule(new miniGameCountdownTask(),
@@ -544,7 +585,7 @@ public class EventHandler {
 
 	/* Start of mini game event */
 	class miniGameCountdownTask extends TimerTask {
-		
+
 		public void run() {
 			globalEventStatus = 3;
 			currentMiniGameTime -= 1;
@@ -559,7 +600,7 @@ public class EventHandler {
 				timer.schedule(new miniGameCountdownTask(), 1000);
 			}
 		}
-		
+
 	}
 
 	/* End of whole game */
@@ -591,7 +632,7 @@ public class EventHandler {
 			// System.exit(0); //Stops the AWT thread (and everything else)
 		}
 	}
-	
+
 	void stopGameTimer(){
 		timer.cancel();
 	}

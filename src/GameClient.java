@@ -67,8 +67,10 @@ public class GameClient {
 	final int port = 9001;
 	final int timeOutDuration = 500;
 	//final String gameServerAddress = "localhost";
-	final String gameServerAddress = "1.1.1.1";
-	//final String gameServerAddress = "10.0.2.2";
+	final String gameServerAddress = "10.0.2.2";
+
+	final boolean serverBoardCasting = true;
+	
 	private DatagramSocket socket;
 	InetAddress inetAddress;
 
@@ -92,22 +94,25 @@ public class GameClient {
 	}
 
 	public void getGameServerIP() throws IOException{
-		// Receive port 8000
-		MulticastSocket mSocket = new MulticastSocket(8000);
-		InetAddress groupAddress = InetAddress.getByName("234.235.236.237");
-		mSocket.joinGroup(groupAddress);
+		if(serverBoardCasting){
+			MulticastSocket mSocket = new MulticastSocket(8000);
+			mSocket.setSoTimeout(timeOutDuration);
+			InetAddress groupAddress = InetAddress.getByName("224.0.0.251");
+			mSocket.joinGroup(groupAddress);
 
-		DatagramPacket packet;
-		byte[] buf = new byte[256];
-		packet = new DatagramPacket(buf, buf.length);
-		mSocket.receive(packet);
+			DatagramPacket packet;
+			byte[] buf = new byte[256];
+			packet = new DatagramPacket(buf, buf.length);
+			System.out.println("packet rc: 1");
+			mSocket.receive(packet);
 
-		inetAddress = packet.getAddress();
-		System.out.println("packet rc: " + new String(packet.getData()));
-		System.out.println("packet rc: " + inetAddress);
-		
-		mSocket.leaveGroup(groupAddress);
-		mSocket.close();
+			System.out.println("packet rc: 2");
+			inetAddress = packet.getAddress();
+			System.out.println(new String(packet.getData(), 0, packet.getLength()) +": " + inetAddress.toString());
+
+			mSocket.leaveGroup(groupAddress);
+			mSocket.close();
+		}
 	}
 
 
@@ -175,7 +180,7 @@ public class GameClient {
 	 * keys, p1 location, p2 ... pP_NUM, treasure0,1,2,3 ... N_NUM, globalEventStatus, currentPreGameTime, currentInGameTime, currentMiniGameTime
 	 */
 	public void mapUpdateEvent(int playerID) throws Exception {
-		getGameServerIP();
+
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -235,7 +240,7 @@ public class GameClient {
 
 	/* Game Server's openTreasureEvent reply format: NoChest, NoKey or Successful */
 	public String openTreasureEvent(int playerID) throws Exception {
-		getGameServerIP();
+
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -272,7 +277,7 @@ public class GameClient {
 
 	/* Game Server's scoreUpdateEvent reply format: Failure or Successful */
 	public String scoreUpdateEvent(int playerID, int newScore) throws Exception {
-		getGameServerIP();
+
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -308,7 +313,7 @@ public class GameClient {
 
 	/* Game Server's addKeyCodeEvent reply format: InvalidKeyCode, InvalidLocation, KeyCodeUsed, Successful */
 	public String addKeyCodeEvent(int playerID, int keyCode) throws Exception {
-		getGameServerIP();
+
 		/*
 		 * Use DataGramSocket for UDP connection convert string "request" to
 		 * array of bytes, suitable for creation of DatagramPacket
@@ -416,7 +421,6 @@ public class GameClient {
 				}
 			n = newn;
 		}
-
 		return tempList[ranking - 1];
 	}
 
@@ -483,15 +487,14 @@ public class GameClient {
 		for(int i = 0; i < P_NUM; i++){
 			counter += playerList[i][0];
 		}
-
 		return counter;
 	}
 
 	/* Returns the total number of players supported by the game server */
 	public int getTotalNumOfPlayersSupported(){
-		return P_NUM-1;
+		return P_NUM - 1;
 	}
-	
+
 	/* Returns boolean if a player is currently logon to the game */
 	public boolean checkPlayerLogonStatus(int playerID){
 		if(playerList[playerID][0] == 1)
