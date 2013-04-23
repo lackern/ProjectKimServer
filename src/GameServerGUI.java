@@ -467,7 +467,7 @@ public class GameServerGUI {
 					byte[] buf = new byte[256];
 
 					buf = dString.getBytes();
-					InetAddress group = InetAddress.getByName("224.0.0.251");
+					InetAddress group = InetAddress.getByName("172.28.176.255");
 
 					DatagramPacket packet;
 					packet = new DatagramPacket(buf, buf.length, group, 8000);
