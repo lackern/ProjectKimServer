@@ -35,9 +35,9 @@ public class GameServerGUI {
 
 	private JFrame frame;
 	private GameServer gameServer;
-	private GameServerCasting gameServerCasting;
+	//private GameServerCasting gameServerCasting;
 	private GameServerThread gameServerThread;
-	private GameServerCastingThread gameServerCastingThread;
+	//private GameServerCastingThread gameServerCastingThread;
 	private GameServerRebootThread gameServerRebootThread;
 
 	JButton startButton = new JButton("Start Server");
@@ -86,8 +86,8 @@ public class GameServerGUI {
 	 */
 	public GameServerGUI() throws Exception {
 		initialize();
-		gameServerCastingThread = new GameServerCastingThread();
-		gameServerCastingThread.start();
+		//gameServerCastingThread = new GameServerCastingThread();
+		//gameServerCastingThread.start();
 		gameServerRebootThread = new GameServerRebootThread();
 		gameServerRebootThread.start();
 	}
@@ -325,8 +325,8 @@ public class GameServerGUI {
 		public void run() {
 			System.out.println("Game initiatised!");
 			try {
-				gameServerCasting = new GameServerCasting();
-				gameServerCasting.startCasting();
+				//gameServerCasting = new GameServerCasting();
+				//gameServerCasting.startCasting();
 			} catch (Exception e) {
 				// 
 				e.printStackTrace();
@@ -420,7 +420,6 @@ public class GameServerGUI {
 
 		public void movePlayer(int playerID, int direction) {
 			eventHandler.movePlayer(playerID, direction);
-			//JPlayer.setText(eventHandler.getPlayerInfoString());
 		}
 
 		public String getKeyCodeInfoString() {
@@ -453,7 +452,7 @@ public class GameServerGUI {
 	// multicast testing
 	class GameServerCasting {
 
-		private static final long boardCastInterval = 500;
+		private static final long broadcastInterval = 500;
 
 		public void startCasting() throws Exception 
 		{
@@ -474,7 +473,7 @@ public class GameServerGUI {
 					socket.send(packet);
 					//System.out.println("mc testing: ");
 					try {
-						Thread.sleep(boardCastInterval);
+						Thread.sleep(broadcastInterval);
 					} 
 					catch (InterruptedException e) { }
 				}

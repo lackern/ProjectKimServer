@@ -27,13 +27,14 @@ public class GameClient {
 	final int addKeyCodeEvent = 5;
 
 	// Various event durations (seconds)
-	private int totalcountdownDurations = 10;
-	private int totalMiniGameDurations = 30;
-	private int totalGameDurations = 150;
+	private int totalcountdownDurations = 30;
+	//private int beforeMiniGameDurations = 60;
+	private int totalMiniGameDurations = 60;
+	private int totalGameDurations = 240;
 	private int currentPreGameTime = totalcountdownDurations;
 	private int currentInGameTime = totalGameDurations;
 	private int currentMiniGameTime = totalMiniGameDurations;
-	//private int rebootDurations = 5;
+	//private int rebootDurations = 15;
 
 	Random randomGenerator;
 
@@ -66,10 +67,10 @@ public class GameClient {
 
 	final int port = 9001;
 	final int timeOutDuration = 500;
-	//final String gameServerAddress = "localhost";
+	final String gameServerAddress = "localhost";
 	//final String gameServerAddress = "10.0.2.2";
-	final String gameServerAddress = "1.1.1.1";
-	final boolean serverBoardCasting = false;
+	//final String gameServerAddress = "1.1.1.1";
+	final boolean serverBroadcasting = false;
 
 	private DatagramSocket socket;
 	InetAddress inetAddress;
@@ -94,7 +95,7 @@ public class GameClient {
 	}
 
 	public void getGameServerIP() throws IOException{
-		if(serverBoardCasting){
+		if(serverBroadcasting){
 			MulticastSocket mSocket = new MulticastSocket(8000);
 			mSocket.setSoTimeout(timeOutDuration);
 			InetAddress groupAddress = InetAddress.getByName("224.0.0.251");

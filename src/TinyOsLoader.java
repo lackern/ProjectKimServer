@@ -20,27 +20,27 @@ public class TinyOsLoader implements MessageListener
 			{93,94,107},
 			{100,97},
 			{109,98,0},
-			
+
 
 			{91,92,0},
-			{88,87,0},
+			{88,87,89},
 			{99,108,0},
 
 			{112,104,0},
-			{90,89,0},
+			{90,0,0},
 			{101,110,0}};
 
-//			{93,94,0,107},
-//			{100,98,88,0},
-//			{109,108,97,0},
-//			
-//			{0,89,87,0},
-//			{88,97,91,0},
-//			{110,108,99,0},
-//			
-//			{112,104,0,0},
-//			{89,90,101,0},
-//			{101,110,0,0}};
+	//			{93,94,0,107},
+	//			{100,98,88,0},
+	//			{109,108,97,0},
+	//			
+	//			{0,89,87,0},
+	//			{88,97,91,0},
+	//			{110,108,99,0},
+	//			
+	//			{112,104,0,0},
+	//			{89,90,101,0},
+	//			{101,110,0,0}};
 
 	// Constructor
 	public TinyOsLoader(int p_input) {
@@ -78,14 +78,14 @@ public class TinyOsLoader implements MessageListener
 			// Print
 			//for(int i =0; i<P_NUM; i++ ){
 
-				//System.out.println("Player: " + i);
-				//System.out.println("queue:");
-				//for(int j =0; j<queueList.get(i).size(); j++ ){
-				//for(int j =0; j<queueList.get(1).size(); j++ ){
-					//System.out.println(queueList.get(i).get(j));
-					//System.out.println(queueList.get(1).get(j));
+			//System.out.println("Player: " + i);
+			//System.out.println("queue:");
+			//for(int j =0; j<queueList.get(i).size(); j++ ){
+			//for(int j =0; j<queueList.get(1).size(); j++ ){
+			//System.out.println(queueList.get(i).get(j));
+			//System.out.println(queueList.get(1).get(j));
 
-				//}
+			//}
 			//}
 
 			checkGrid(mmsg.get_player_id());
@@ -106,12 +106,12 @@ public class TinyOsLoader implements MessageListener
 				if(GRID[i][j]>0)
 					if(isInQueue(GRID[i][j], playerNum))
 						locationList[playerNum] = i/3 * 14 + 34 + i%3;
-				
-//					if(!isInQueue(GRID[i][j], playerNum))
-////						isSubsetOfQueue = false;
+
+				//					if(!isInQueue(GRID[i][j], playerNum))
+				////						isSubsetOfQueue = false;
 			}
-//			if (isSubsetOfQueue)
-//				locationList[playerNum] = i/3 * 14 + 34 + i%3;
+			//			if (isSubsetOfQueue)
+			//				locationList[playerNum] = i/3 * 14 + 34 + i%3;
 		}
 	}
 

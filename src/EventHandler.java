@@ -36,14 +36,14 @@ public class EventHandler {
 	final int endOfGameEvent = 6;
 
 	// Various event durations (seconds)
-	private int totalcountdownDurations = 10;
-	private int beforeMiniGameDurations = 15;
-	private int totalMiniGameDurations = 30;
-	private int totalGameDurations = 150;
+	private int totalcountdownDurations = 30;
+	private int beforeMiniGameDurations = 60;
+	private int totalMiniGameDurations = 60;
+	private int totalGameDurations = 240;
 	private int currentPreGameTime = totalcountdownDurations;
 	private int currentInGameTime = totalGameDurations;
 	private int currentMiniGameTime = totalMiniGameDurations;
-	private int rebootDurations = 5;
+	private int rebootDurations = 15;
 
 	Random randomGenerator;
 	String replyInfo = "";
@@ -153,44 +153,8 @@ public class EventHandler {
 		return reply;
 	}
 
-	public void movePlayer(int playerID, int newDirection) {
-		int[][] newMove = new int[4][2];
-		newMove[0][0] = -1;
-		newMove[0][1] = 0;
-		newMove[1][0] = 1;
-		newMove[1][1] = 0;
-		newMove[2][0] = 0;
-		newMove[2][1] = -1;
-		newMove[3][0] = 0;
-		newMove[3][1] = 1;
+	/* Start of initialization codes */
 
-		int curX = playerLocation[playerID] / COLUMN;
-		int curY = playerLocation[playerID] % COLUMN;
-
-		if (!(curX + newMove[newDirection][0] < 0
-				|| curX + newMove[newDirection][0] >= ROW
-				|| curY + newMove[newDirection][1] < 0 || curY
-				+ newMove[newDirection][1] >= COLUMN)) {
-			curX += newMove[newDirection][0];
-			curY += newMove[newDirection][1];
-		}
-
-		int newLocation = curX * COLUMN + curY;
-		if(checkWithinBoundary(newLocation))
-			playerLocation[playerID] = newLocation;
-	}
-
-	private boolean checkWithinBoundary(int location){
-		boolean result = true;
-		for(int i = 0; i < BOUNDARY_LIST.length; i++ ){
-			if (location == BOUNDARY_LIST[i]){
-				result = false;
-				break;
-			}
-		}
-
-		return result;		
-	}
 	private void initializeTreasureList() {
 		treasureList = new int[N_NUM];
 
@@ -223,7 +187,7 @@ public class EventHandler {
 		playerList = new int[P_NUM][3];
 		for (int i = 0; i < P_NUM; i++) {
 			playerList[i][0] = 0;
-			playerList[i][1] = 0;
+			playerList[i][1] = -1;
 			playerList[i][2] = 0;
 		}
 
@@ -285,12 +249,58 @@ public class EventHandler {
 
 	}
 
+	/* */
 	private void initializePlayerLocation() {
 		playerLocation = new int[P_NUM];
 		for (int i = 0; i < P_NUM; i++)
 			playerLocation[i] = (int) (COLUMN * 1.5);
 	}
 
+	/* End of initialization codes */
+
+
+	/* Use for manipulating player movement on GUI */
+	public void movePlayer(int playerID, int newDirection) {
+		int[][] newMove = new int[4][2];
+		newMove[0][0] = -1;
+		newMove[0][1] = 0;
+		newMove[1][0] = 1;
+		newMove[1][1] = 0;
+		newMove[2][0] = 0;
+		newMove[2][1] = -1;
+		newMove[3][0] = 0;
+		newMove[3][1] = 1;
+
+		int curX = playerLocation[playerID] / COLUMN;
+		int curY = playerLocation[playerID] % COLUMN;
+
+		if (!(curX + newMove[newDirection][0] < 0
+				|| curX + newMove[newDirection][0] >= ROW
+				|| curY + newMove[newDirection][1] < 0 || curY
+				+ newMove[newDirection][1] >= COLUMN)) {
+			curX += newMove[newDirection][0];
+			curY += newMove[newDirection][1];
+		}
+
+		int newLocation = curX * COLUMN + curY;
+		if(checkWithinBoundary(newLocation))
+			playerLocation[playerID] = newLocation;
+	}
+
+	/* Checks if a given location is within boundary */
+	private boolean checkWithinBoundary(int location){
+		boolean result = true;
+		for(int i = 0; i < BOUNDARY_LIST.length; i++ ){
+			if (location == BOUNDARY_LIST[i]){
+				result = false;
+				break;
+			}
+		}
+
+		return result;		
+	}
+
+	/* Return "invalidEvent" when an invalid event is called */
 	private String invalidEvent(int playerID) {
 		return "invalidEvent";
 	}
@@ -304,6 +314,7 @@ public class EventHandler {
 			reply = "Failure";
 		else if (playerList[playerID][0] == 0) {
 			playerList[playerID][0] = 1;
+			playerList[playerID][1] = 0;
 			reply = "Successful";
 		} else if (playerList[playerID][0] == 1)
 			reply = "AlreadyLogon";
@@ -338,8 +349,8 @@ public class EventHandler {
 		replyInfo = "[mapUpdateEvent] Player: " + playerID + "\n";
 		// tinyOS, use only this only when tinyOs is available
 
-		
-		 /* for( int i = 0; i < P_NUM; i++) { 
+
+		/* for( int i = 0; i < P_NUM; i++) { 
 		  l_reply += playerList[i][0] + ";";
 		  l_reply += playerList[i][1] + ";"; 
 		  l_reply += playerList[i][2] + ";";
@@ -350,7 +361,7 @@ public class EventHandler {
 		  replyInfo += playerList[i][2] + ";";
 		  replyInfo += tinyOsLoader.getPlayerLocation(i) + ";";
 		  } */
-		 
+
 
 		for (int i = 0; i < P_NUM; i++) {
 			l_reply += playerList[i][0] + ";";
@@ -363,7 +374,7 @@ public class EventHandler {
 			replyInfo += playerList[i][2] + ";";
 			replyInfo += playerLocation[i] + ";";
 		}
-		
+
 
 		replyInfo += "\n";
 
@@ -403,15 +414,20 @@ public class EventHandler {
 					// generate the treasure at some other location
 					int i = randomGenerator.nextInt(N_NUM);
 
-					if (treasureList[i] == 0) {
-						treasureList[i] = 1;
-						// tinyOS
-						//treasureList[tinyOsLoader.getPlayerLocation(playerID)] = 0;
+					if (treasureList[i] == 0) 
+						if(i==34 | i==35 |i==36 |
 
-						// no TinyOs
-						treasureList[playerLocation] = 0;
-						break;
-					}
+						i==48 |i==49 |i==50 |
+
+						i==62 |i==63 |i==64 ){
+							treasureList[i] = 1;
+							// tinyOS
+							//treasureList[tinyOsLoader.getPlayerLocation(playerID)] = 0;
+
+							// no TinyOs
+							treasureList[playerLocation] = 0;
+							break;
+						}
 				}
 
 				// score +50 for each opened chest
@@ -439,7 +455,7 @@ public class EventHandler {
 			reply = "Successful";
 		} else
 			reply = "Failure";
-		
+
 		replyInfo += reply;
 		return reply;
 	}
@@ -486,7 +502,7 @@ public class EventHandler {
 		return playerScore;
 	}
 
-	/* Returns a string for GUI display */
+	/* Returns a keycode info string for GUI display */
 	String getKeyCodeInfoString() {
 		String keyCodeString = "";
 		for (int i = 0; i < K_NUM; i++) {
@@ -500,7 +516,7 @@ public class EventHandler {
 		return keyCodeString;
 	}
 
-	/* Returns a string for GUI display */
+	/* Returns a player info string for GUI display */
 	String getPlayerInfoString() {
 		String playerInfoString = "";
 		for (int i = 1; i < P_NUM; i++) {
@@ -511,7 +527,7 @@ public class EventHandler {
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
 							+ "  keys: " + playerList[i][2] + "  Location: "
 							+ tinyOsLoader.getPlayerLocation(i) + "\n"; */
-			 
+
 			// no tinyOS
 			playerInfoString += "Player " + i + " : " + "  logon: "
 					+ playerList[i][0] + "  Score: " + playerList[i][1]
@@ -522,7 +538,7 @@ public class EventHandler {
 		return playerInfoString;
 	}
 
-	/* Returns a string for GUI display */
+	/* Returns a tresaure info string for GUI display */
 	String getTreasureInfoString() {
 		String treasureInfoString = "";
 		for (int i = 0; i < N_NUM; i++) {
@@ -537,11 +553,12 @@ public class EventHandler {
 		return treasureInfoString;
 	}
 
-	/* Returns a string for GUI display */
+	/* Returns a reply info string for GUI display */
 	String getReplyInfoString() {
 		return replyInfo;
 	}
 
+	/* Convert an integer into its corresponding text game status */
 	private String convertGameStatus(int gameStatusID){
 		// 0 = pre-game
 		// 1 = countdown once the first player logon to the server
@@ -574,6 +591,7 @@ public class EventHandler {
 		return gameStatus;
 	}	
 
+	/* Returns a game status info string for GUI display */
 	String getGameStatusInfoString() {
 		String timerInfoString = "";
 		timerInfoString += "Game status: " + convertGameStatus(globalEventStatus) + "\n";
@@ -583,8 +601,14 @@ public class EventHandler {
 		return timerInfoString;
 	}
 
+	/* Return the current golobal event status */
 	int getGlobalEventStatus(){
 		return globalEventStatus;
+	}
+
+	/* Stop all timers when game ends */
+	void stopGameTimer(){
+		timer.cancel();
 	}
 
 	/*
@@ -657,6 +681,7 @@ public class EventHandler {
 
 	}
 
+	/* Game server reboot task: used to restart server after certain fixed duration */
 	class GameServerRebootTask extends TimerTask {
 		public void run() {
 			System.out.println("Rebooting gameserver!");
@@ -664,10 +689,6 @@ public class EventHandler {
 			timer.cancel();
 			// System.exit(0); //Stops the AWT thread (and everything else)
 		}
-	}
-
-	void stopGameTimer(){
-		timer.cancel();
 	}
 
 }
